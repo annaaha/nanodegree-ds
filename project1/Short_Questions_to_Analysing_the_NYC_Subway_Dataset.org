@@ -12,13 +12,17 @@
 #+KEYWORDS:
 #+LANGUAGE: en
 #+SELECT_TAGS: export
+#+LATEX_CLASS_OPTIONS: [10pt,DIV=15,headlines=1]
 #+LATEX_HEADER: \usepackage{booktabs}
-\newpage
+#+LATEX_HEADER: \usepackage{varioref}
+#+LATEX_HEADER: \KOMAoptions{DIV=last}
+
+
 * Statistical Test
 
 ** Which statistical test did you use to analyze the NYC subway data? Did you use a one-tail or a two-tail P value? What is the null hypothesis? What is your p-critical value?
 
-I used the Mann – Whitney U Test, which is a non – parametric  statistical test, given by following python statistical function:
+I used the Mann-Whitney U Test, which is a non-parametric statistical test, given by following Python statistical function:
 
 #+BEGIN_SRC python
 scipy.stats.mannwhitneyu(X, Y, use_continuity = True)
@@ -26,9 +30,10 @@ scipy.stats.mannwhitneyu(X, Y, use_continuity = True)
 
 where X sample is the number of entries with rain and Y sample is the number of entries without rain.
 
-I used a two-tail p-value. The function, scipy.stats.mannwhitneyu returns a one-tail value, which must be  multiplied by 2 in order to report the proper P value. 
+I used a two-tail p-value. The function, scipy.stats.mannwhitneyu returns a one-tail value, which must be  multiplied by 2 in order to report the proper p-value. 
 
-The null hypothesis H_{0} is:  the number of entries with rain and the number of entries without rain are the same. 
+The null hypothesis H_{0} is:  the number of entries with rain and the
+number of entries without rain are the same or in mathematical terms, given random draws x from X and y from Y: $P(x  >   y)  =   0.5$
 
 My p-critical value is  0.05. 
 
@@ -36,24 +41,21 @@ Note I used as data source [[file:ProblemSet3/turnstile_weather_v2.csv][file:Pro
 
 ** Why is this statistical test applicable to the dataset? In particular, consider the assumptions that the test is making about the distribution of ridership in the two samples.
 
-The Mann – Whitney U Test is a statistical test for non normal
-distributions, i.e. non parametric ones.
+The Mann-Whitney U Test is a statistical test for non-normal
+distributions, i.e. non-parametric ones.
 
 As a first step to verify the distribution I checked the histograms of
-ENTRIESn_hourly with rain and without rain. The histogram, see figure [[fig:StatisticalTest1]], of the two
+ENTRIESn_hourly with rain and without rain. The histogram, see figure
+\vref{fig:Visualization1}, of the two
 samples shows that their distribution is not normal. 
 
-#+CAPTION: Histogram of ENTRIESn_hourly
-#+NAME:   fig:StatisticalTest1
-[[./images/histogramENTRIESnhourly.png]]
-
-As a second step I used the Shapiro-Wilk test in order to check is the
-samples as normal distributed.  For sample X the Shapiro W test
+As a second step I used the Shapiro-Wilk test in order to check if the
+samples are normal distributed.  For sample X the Shapiro W test
 statistic is 0.5938820838928223 and p is 0.0.  For sample Y the
 Shapiro W test statistic is 0.5956180691719055 and p is also 0.0,
 which means that in both cases the samples are not normal distributed.
-Based on the results above I concluded that the samples are non
-parametric. Therefore the Mann – Whitney U Test is applicable to the
+Based on the results above I concluded that the samples are
+non-parametric. Therefore the Mann-Whitney U Test is applicable to the
 given dataset.
 
 ** What results did you get from this statistical test? These should include the following numerical values: p-values, as well as the means for each of the two samples under test.
@@ -68,11 +70,9 @@ Based on the results of Mann-Whitney U test the null hypothesis has to
 be rejected. The  p-value is 5.482139142487499e-06, which is less than
 p-critical (0.05). That means that there is a significant difference
 between ENTRIESn_hourly with rain and ENTRIESn_hourly without
-rain. Taking into account the mean values I conclude that more people
-use NYC subway when it rains, since the mean value of ENTRIESn_hourly
+rain. Taking into account the mean values *I conclude that more people
+use NYC subway when it rains*, since the mean value of ENTRIESn_hourly
 with rain is larger than the mean value of ENTRIESn_hourly without rain.
-
-\clearpage
 
 * Linear Regression
 
@@ -83,16 +83,15 @@ the gradient descent algorithm in my regression model.
 
 ** What features (input variables) did you use in your model? Did you use any dummy variables as part of your features?
 
-The features that I used in my model are hour and UNIT. The feature
-UNIT is a dummy variable.
+The features that I used in my model are hour and UNIT. UNIT is a categorical variable from which many dummy variables are generated.
 
 ** Why did you select these features in your model? We are looking for specific reasons that lead you to believe that the selected features will contribute to the predictive power of your model.
 
 I decided to use hour because I thought that subway ridership depends on time of day. I assumed that many people use the subway to travel to work. That should lead to ridership peaks at beginning and at end of working hours.
 
-Additional I included UNIT as dummy variable in my features because I
-thought that ridership varies by UNIT, e.g. UNIT R179 (1,270,579) has
-more ENTRIESn than R172 (362,755).
+Additional I included UNIT in my features because I thought that
+ridership varies by UNIT, e.g. UNIT R179 (1,270,579) has more entries
+than R172 (362,755).
 
 ** What are the coefficients (or weights) of the non-dummy features in your linear regression model?
 
@@ -119,58 +118,23 @@ ridership.
 
 #+CAPTION: R2 values of various feature combinations
 #+NAME:   tab:feature-test
-#+ATTR_LATEX: :booktabs t :placement [!] :font \footnotesize 
+#+ATTR_LATEX: :booktabs t :placement [!] :font \scriptsize              
 | Case | Features                   |  alpha | Iterations |      R2 |
 |------+----------------------------+--------+------------+---------|
 |    1 | hour, UNIT                 |   0.01 |         75 |   0.267 |
 |    2 | hour, UNIT                 |   0.01 |        150 |   0.426 |
 |    3 | *hour, UNIT*               | *0.05* |       *75* | *0.458* |
 |    4 | hour, UNIT                 |   0.05 |        150 |   0.469 |
-|      |                            |        |            |         |
-|    5 | rain, UNIT                 |   0.01 |         75 |     0.2 |
-|    6 | rain, UNIT                 |   0.01 |        150 |   0.337 |
-|    7 | rain, UNIT                 |   0.05 |         75 |   0.375 |
-|    8 | rain, UNIT                 |   0.05 |        150 |   0.375 |
-|      |                            |        |            |         |
-|    9 | fog, UNIT                  |   0.01 |         75 |   0.202 |
-|   10 | fog, UNIT                  |   0.01 |        150 |   0.337 |
-|   11 | fog, UNIT                  |   0.05 |         75 |   0.374 |
-|   12 | fog, UNIT                  |   0.05 |        150 |   0.375 |
-|      |                            |        |            |         |
-|   13 | day_week, UNIT             |   0.01 |         75 |   0.209 |
-|   14 | day_week, UNIT             |   0.01 |        150 |   0.346 |
-|   15 | day_week, UNIT             |   0.05 |         75 |   0.384 |
-|   16 | day_week, UNIT             |   0.05 |        150 |   0.385 |
-|      |                            |        |            |         |
-|   17 | hour, rain, UNIT           |   0.01 |         75 |   0.267 |
-|   18 | hour, rain, UNIT           |   0.01 |        150 |   0.416 |
-|   19 | hour, rain, UNIT           |   0.05 |         75 |   0.459 |
-|   20 | hour, rain, UNIT           |   0.05 |        150 |   0.459 |
-|      |                            |        |            |         |
-|   21 | hour, fog, UNIT            |   0.01 |         75 |   0.267 |
-|   22 | hour, fog, UNIT            |   0.01 |        150 |   0.416 |
-|   23 | hour, fog, UNIT            |   0.05 |         75 |   0.458 |
-|   24 | hour, fog, UNIT            |   0.05 |        150 |   0.459 |
-|      |                            |        |            |         |
-|   25 | hour, day_week, UNIT       |   0.01 |         75 |   0.274 |
-|   26 | hour, day_week, UNIT       |   0.01 |        150 |   0.425 |
-|   27 | hour, day_week, UNIT       |   0.05 |         75 |   0.468 |
-|   28 | hour, day_week, UNIT       |   0.05 |        150 |   0.469 |
-|      |                            |        |            |         |
-|   29 | hour, day_week, fog, UNIT  |   0.01 |         75 |   0.274 |
-|   30 | hour, day_week, fog, UNIT  |   0.01 |        150 |   0.426 |
-|   31 | hour, day_week, fog, UNIT  |   0.05 |         75 |   0.468 |
-|   32 | hour, day_week, fog, UNIT  |   0.05 |        150 |   0.469 |
-|      |                            |        |            |         |
-|   33 | hour, day_week, rain, UNIT |   0.01 |         75 |   0.274 |
-|   34 | hour, day_week, rain, UNIT |   0.01 |        150 |   0.426 |
-|   35 | hour, day_week, rain, UNIT |   0.05 |         75 |   0.468 |
-|   36 | hour, day_week, rain, UNIT |   0.05 |        150 |   0.469 |
-|      |                            |        |            |         |
-|   37 | meantempi, UNIT            |   0.01 |         75 |   0.202 |
-|   38 | meantempi, UNIT            |   0.01 |        150 |   0.337 |
-|   39 | meantempi, UNIT            |   0.05 |         75 |   0.375 |
-|   40 | meantempi, UNIT            |   0.05 |        150 |   0.376 |
+|    5 | rain, UNIT                 |   0.05 |         75 |   0.375 |
+|    6 | fog, UNIT                  |   0.05 |         75 |   0.374 |
+|    7 | day_week, UNIT             |   0.05 |         75 |   0.384 |
+|    8 | hour, rain, UNIT           |   0.05 |         75 |   0.459 |
+|    9 | hour, fog, UNIT            |   0.05 |         75 |   0.458 |
+|   10 | hour, day_week, UNIT       |   0.05 |         75 |   0.468 |
+|   11 | hour, day_week, fog, UNIT  |   0.05 |         75 |   0.468 |
+|   12 | hour, day_week, rain, UNIT |   0.05 |         75 |   0.468 |
+|   13 | meantempi, UNIT            |   0.05 |         75 |   0.375 |
+
 
 
 The histogram of the residuals, i.e. observed values minus predicted
@@ -181,52 +145,57 @@ for this dataset.
 
 #+CAPTION: Histogram of Residuals
 #+NAME:   fig:LinearRegression1
-#+ATTR_LATEX: :placement [h!]
+#+ATTR_LATEX: :placement [h!] :width 0.5\linewidth
 [[./images/histogramResiduals.png]]
 
-\clearpage
 
 * Visualization
 
 ** Histograms of ENTRIESn_hourly for rainy days and histogram of ENTRIESn_hourly for non-rainy days.
 
-Figure [[fig:Visualization1]] contains two histograms. The histogram with blue
+Figure \vref{fig:Visualization1}  contains two histograms. The histogram with blue
 color shows the relationship between ENTRIESn_hourly in x-axis and its
 frequency in y-axis, when it is not raining. In the same way, the
 histogram with green color shows the relationship between
 ENTRIESn_hourly in x-axis and its frequency in y-axis, when it is
-raining. The histograms illustrates that that the distribution of the
+raining. The histograms illustrates that the distribution of the
 samples is not normal. 
 
 #+CAPTION: Histogram of ENTRIESn_hourly
 #+NAME:   fig:Visualization1
-#+ATTR_LATEX: :placement [h!]
-[[./images/histogramResiduals.png]]
+#+ATTR_LATEX: :placement [h!] :width 0.5\linewidth
+[[./images/histogramENTRIESnhourly.png]]
 
 ** Ridership by time-of-day and Ridership by day-of-week 
 
-Figure [[fig:Visualization2]] visualizes ridership by
+\begin{figure}[ht]
+\begin{minipage}[b]{0.45\linewidth}
+\centering
+\includegraphics[width=\textwidth]{./images/RidershipTimeofDay.png}
+\caption{Ridership by Time of Day}
+\label{fig:Visualization2}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[b]{0.45\linewidth}
+\centering
+\includegraphics[width=\textwidth]{./images/RidershipDayofWeek.png}
+\caption{Ridership by Day of Week}
+\label{fig:Visualization3}
+\end{minipage}
+\end{figure}
+
+Figure \ref{fig:Visualization2} visualizes ridership by
 time-of-day. It represents the relationship between hours and
 ENTRIESn_hourly. The figure below shows that at around 12 o'clock and
 at 20 o'clock the ridership is highest.
 
-#+CAPTION: Ridership by Time of Day
-#+NAME:   fig:Visualization2
-#+ATTR_LATEX: :placement [h!] :width 0.8\linewidth
-[[./images/RidershipTimeofDay.png]]
-
-
-Figure [[fig:Visualization3]] visualizes ridership by day-of-week. It
+Figure \ref{fig:Visualization3} visualizes ridership by day-of-week. It
 represents the relationship between day of week and the number of
 entries. The figure shows that during the week the ridership is
 substantially higher than on weekends.
 
-#+CAPTION: Ridership by Day of Week
-#+NAME:   fig:Visualization3
-#+ATTR_LATEX: :placement [h!] :width 0.8\linewidth
-[[./images/RidershipDayofWeek.png]]
 
-\clearpage
+
 
 * Conclusion
 
@@ -240,8 +209,8 @@ subway when it is raining.
 
 Using rain as a feature in the regression model with gradient descent,
 the coefficient of determination R2 is relative low. It is equal to
-0.375, see table [[tab:Conclusion1]].  The comparison of R2 values from case 3, 7
-and 19, shows that the independent variable rain does not have a big
+0.375, see table \vref{tab:Conclusion1}.  The comparison of R2 values from case 3, 5
+and 8, shows that the independent variable rain does not have a big
 impact on the dependent variable ENTRIESn_hourly --- only 37.5%.
 
 #+CAPTION: R2 values of various feature combinations
@@ -250,22 +219,19 @@ impact on the dependent variable ENTRIESn_hourly --- only 37.5%.
 | Case | Features         | alpha | Iterations |    R2 |
 |------+------------------+-------+------------+-------|
 |    3 | hour, UNIT       |  0.05 |         75 | 0.458 |
-|    7 | rain, UNIT       |  0.05 |         75 | 0.375 |
-|   19 | hour, rain, UNIT |  0.05 |         75 | 0.459 |
+|    5 | rain, UNIT       |  0.05 |         75 | 0.375 |
+|    8 | hour, rain, UNIT |  0.05 |         75 | 0.459 |
 
 The Mann-Whitney U statistical test in Section 1 returns a p-value
-equal to 5.482139142487499e-06 which is less than the p-critical, and
+equal to 5.482139142487499e-06, which is less than the p-critical, and
 therefore the null hypothesis H_{0} can be rejected. That means that
 the ridership between raining and non raining days is not the
-same. Additional taking in account, the means of the samples, which
-are shown below:
+same. Additional taking in account, the means of the samples:
 
-			mean value of entries with rain = 2028.1960354720918,
-			mean value of entries without rain = 1845.5394386644084 
+- mean value of entries with rain = 2028.1960354720918,
+- mean value of entries without rain = 1845.5394386644084 
 
 I conclude that *more people use the NYC subway when it is raining*.
-
-\clearpage
 
 * Reflection
 
@@ -289,10 +255,8 @@ reported per hour, but for four hours. This has a negative impact on
 the precision of the regression model.
 
 The value of coefficient of determination R2 is about 0.46. It might
-be possible to achieve higher R2 values with a non linear regression
+be possible to achieve higher R2 values with a nonlinear regression
 model.
-
-\clearpage
 
 * References
 
