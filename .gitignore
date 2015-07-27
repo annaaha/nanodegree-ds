@@ -1,0 +1,6 @@
+# ignore LaTeX files
+*.tex
+*.tex~
+
+# ignore org backup files
+*.org~
