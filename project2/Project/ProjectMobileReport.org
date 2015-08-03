@@ -1,7 +1,7 @@
 #+TITLE:     Project Data Wrangling with MongoDB
 #+AUTHOR:    Anna Anesiadou-Hansen
 #+EMAIL:     anna.a-hansen@web.de
-#+DATE:      2015-07-27 Mon
+#+DATE:      2015-08-03
 #+DESCRIPTION:
 #+KEYWORDS:
 #+LANGUAGE:  en
@@ -13,7 +13,6 @@
 #+LINK_UP:   
 #+LINK_HOME: 
 #+XSLT:
-
 
 * Problems encountered in the map
 For the project I choose the map of Mobile in Alabama from MAPZEN
@@ -39,7 +38,7 @@ To find problems in the map of Mobile I did the following steps:
    - +1 251 432 4117: international format
 4) Created audit_postcode.py to audit the postal codes
 
-   One incosistent postal code was found:  AL 36615.
+   One inconsistent postal code was found:  AL 36615.
    Several postal codes were found that do not belong to Mobile city. Further investigations have shown that the map of Mobile covers larger areas than Mobile city. These postal codes belong to places outside Mobile city but are part of the map.
    Examples:
    - 36527: Spanish Fort, Alabama
@@ -87,7 +86,7 @@ mapping_street_type = {
 The format of national and international phone numbers of Mobile is
 reformatted according to NANP standard with the function
 update_phone(phone) in file audit_phone.py.  For example the phone
-numbr 251 5108500 is reformatted to 251-510-8500.
+number 251 5108500 is reformatted to 251-510-8500.
 
 ** Postal Codes
 
@@ -98,7 +97,7 @@ all non-digits.
 
 * Overview of the Data
 
-This section contains basic statistics about the dataset.
+This section contains basic statistics about the data set.
                                   
 ** File sizes
                                         
@@ -209,7 +208,7 @@ Here are some basic user percentage statistics:
 OpenStreetMap is a media that might not be used well by local shops in
 Mobile, Alabama. To verify this statement the following query is
 done. It lists the shop categories and the amount of shops of this
-category being put on OpenSteetMap.
+category being put on OpenStreetMap.
 
 #+BEGIN_SRC 
 > db.mobile_AL.aggregate([
@@ -226,36 +225,52 @@ category being put on OpenSteetMap.
 { "_id" : "hairdresser", "count" : 4 }
 { "_id" : "jewelry", "count" : 3 }
 ...
-{ "_id" : "hardware", "count" : 1 }
 { "_id" : "shoes", "count" : 1 }
-{ "_id" : "pawnbroker", "count" : 1 }
-{ "_id" : "medical_supply", "count" : 1 }
-{ "_id" : "pet", "count" : 1 }
-{ "_id" : "mall", "count" : 1 }
-{ "_id" : "bowling alley", "count" : 1 }
 { "_id" : "clothes", "count" : 1 }
-{ "_id" : "books", "count" : 1 }
 { "_id" : "electronics", "count" : 1 }
-{ "_id" : "music", "count" : 1 }
 #+END_SRC
 
 The results above are very low for a city of roughly 200000
 inhabitants. For example, the number of shops with clothes, shoes or
 electronics are only 3 shops altogether. This means that few shop
 owners put their shop information on OpenStreetMap. This supports the
-original statement. To increase substantially the number of shops
-included in the map a collaboration with the local university could
-help. Computer Information Systems of University of Mobile could have
-as part of their studies an obligatory project to help local shop
-owners to put their shop information on OpenStreetMap.
+original statement. 
 
-** GNIS Information
+It is very tedious and time-consuming to add that information
+manually. A better way might be to write a program that queries search
+engines, like Google, to find shops of certain categories and add
+their address data programmatically, e.g. searching for "shop shoe
+Mobile city Alabama" and then check the result pages for valuable
+information on shops selling shoes in Mobile. One challenge for this
+is whether it is legal to fetch the data from the websites. Another
+challenge is to write the program in such a way that it can correctly
+identify valid information for certain types of shops from web
+pages. Schema.org provides the necessary vocabularies that would make
+it easy for computer programs to process shop information from web
+pages but it is not yet in widespread use. Hence, some kind of natural
+language processing algorithms would be needed to extract the relevant
+information. To add missing addresses for shops geocoding services,
+like provided by Google Maps API, might be used. Before using them
+legal constraints of those services need to be analyzed. It might
+simply not be allowed to do so. An alternative might be to cooperate
+with the City of Mobile to get high quality map data. However, also
+this option has probably legal challenges. Currently it is not
+possible to access City of Mobile maps
+(http://maps.cityofmobile.org/maps/default.html) for me because access
+seems to be blocked from abroad. 
 
-The Geographic Names Information System (GNIS) is data supplied by
-government agencies. For a better structure of the json file
-mobile_alabama.osm.json all GNIS information of a node should be
-included in a dictionary "gnis_info" structure like it is done for
-address. For example gnis_info could get the shape:
+The data collected in this way needs to be audited and
+cleaned. Enhanced versions of the programs written in this project
+could be used for that purpose.
+
+** GNIS and Tiger Information
+
+The Geographic Names Information System (GNIS) and Tiger
+(Topologically Integrated Geographic Encoding and Referencing) are
+data supplied by government agencies. For a better structure of the
+JSON file mobile_alabama.osm.json all GNIS information of a node
+should be included in a dictionary "gnis_info" structure like it is
+done for address tags.  For example gnis_info could get the shape:
 
 #+BEGIN_SRC 
 gnis_info = { "id" : "143846", "County" : "Mobile", 
@@ -263,11 +278,5 @@ gnis_info = { "id" : "143846", "County" : "Mobile",
              "ST_alpha" : "AL", "ST_num" : "01"}.
 #+END_SRC
 
-** Conclusion
-
-After auditing and cleaning the map data of Mobile, Alabama higher
-quality data for OpenStreetMap can be produced. Currently only few
-shops have their details on the map. A cooperation between the local
-university and shop owners could help to improve the situation
-substantially. Introducing a GNIS dictionary in all relevant nodes
-would improve the structure of the data model.
+Similarly Tiger data of a node should be be included in a dictionary
+called "tiger_info".
