@@ -1,0 +1,199 @@
+---
+title: "data_eu dataset creation"
+author: "Anna Anesiadou-Hansen"
+date: "April 17, 2016"
+output: html_document
+---
+
+Using different data sets from `http://www.gapminder.org/data/` I have build a data set called `data_eu`. Following files have been choosen:
+
+* "Indicator_BMI female ASM.csv"
+* "Indicator_BMI male ASM.csv"
+* "Indicator_SBP female ASM.csv"
+* "Indicator_SBP male ASM.csv"
+* "Indicator_TC female ASM.csv"
+* "Indicator_TC male ASM.csv"
+* "indicator sugar_consumption.csv"
+* "indicator food_consumption.csv"
+* "indicator gapminder gdp_per_capita_ppp.csv"
+* "indicator life_expectancy_at_birth.csv"
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+library(dplyr)
+library(psych)
+# library(xlsx)
+library(gridExtra)
+library(tidyr)
+library(memisc)
+
+# Read BMI related .csv files, Reshape and Merge dataframes
+BMI_female = read.csv("Indicator_BMI female ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(BMI_female)[1] <- "Country"  # Rename the first column
+BMI_female<- gather(BMI_female, Year, female, 2:ncol(BMI_female))  # Reshape dataframe
+BMI_female$Year <- factor(BMI_female$Year, ordered = T) # Ordered column Year 
+
+BMI_male = read.csv("Indicator_BMI male ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(BMI_male)[1] <- "Country"  # Rename the first column
+BMI_male<- gather(BMI_male, Year, male, 2:ncol(BMI_male))  # Reshape dataframe
+BMI_male$Year <- factor(BMI_male$Year, ordered = T) # Ordered column Year
+
+# Merge data sets BMI_female & BMI_male
+BMI <- merge(BMI_female, BMI_male, by = c("Country", "Year")) %>% na.omit()
+BMI<- gather(BMI, "Gender", "BMI_Index", 3:4)
+
+#Underweight: BMI is less than 18.5
+#Normal weight: BMI is 18.5 to 24.9
+#Overweight: BMI is 25 to 29.9
+#Obese: BMI is 30 or more
+
+# Read Bloodpressure related .xlsx files, Reshape and Merge dataframes
+Bloodpressure_female = read.csv("Indicator_SBP female ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Bloodpressure_female)[1] <- "Country" # Rename the first column
+Bloodpressure_female <- gather(Bloodpressure_female, Year, female, 2:ncol(Bloodpressure_female)) # Reshape dataframe
+Bloodpressure_female$Year <- factor(Bloodpressure_female$Year , ordered = T) # Ordered column Year
+
+
+Bloodpressure_male = read.csv("Indicator_SBP male ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Bloodpressure_male)[1] <- "Country" # Rename the first column
+Bloodpressure_male <- gather(Bloodpressure_male, Year, male, 2:ncol(Bloodpressure_male)) # Reshape dataframe
+Bloodpressure_male$Year <- factor(Bloodpressure_male$Year , ordered = T) # Ordered column Year
+
+Bloodpressure <- merge(Bloodpressure_female, Bloodpressure_male, by = c("Country","Year"))  %>% na.omit() # Merge data sets Bloodpressure_female & Bloodpressure_male
+Bloodpressure <- gather(Bloodpressure, "Gender", "Bloodpressure", 3:4)
+
+#Category 	                   systolic, mm Hg 	    diastolic, mm Hg
+#Hypotension                        < 90                  < 60
+#Desired                            90–119                60–79
+#Prehypertension                    120–139               80–89
+#Stage 1 hypertension               140–159               90–99
+#Stage 2 hypertension               160–179               100–109
+#Hypertensive urgency               ≥ 180                 ≥ 110
+#Isolated systolic hypertension     ≥ 160                 < 90
+
+# Read Cholesterol related .xlsx files, Reshape and Merge dataframes
+Cholesterol_female <- read.csv("Indicator_TC female ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Cholesterol_female)[1] <- "Country" # Rename the first column
+Cholesterol_female <- gather(Cholesterol_female , Year, female, 2:ncol(Cholesterol_female)) # Reshape dataframe
+Cholesterol_female$Year <- factor(Cholesterol_female$Year, ordered = T) # Ordered column Year
+
+Cholesterol_male <- read.csv("Indicator_TC male ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Cholesterol_male)[1] <- "Country" # Rename the first column
+Cholesterol_male <- gather(Cholesterol_male , Year, male, 2:ncol(Cholesterol_male)) # Reshape dataframe
+Cholesterol_male$Year <- factor(Cholesterol_male$Year, ordered = T) # Ordered column Year
+
+Cholesterol<- merge(Cholesterol_female, Cholesterol_male, by = c("Country", "Year")) %>% na.omit()# Merge data sets Cholesterol_female & Cholesterol_male
+Cholesterol<- gather(Cholesterol, "Gender", "Cholesterol", 3:4) # Reshape dataframe
+
+# Level mg/dL 	    Level mmol/L 	     Interpretation
+#   < 200 	            < 5.2 	          Desirable level corresponding to lower risk for heart disease
+#   200–240 	          5.2–6.2 	        Borderline high risk
+#   > 240 	              > 6.2 	        High risk
+
+
+
+#Merge data sets BMI & Bloodpressure
+BMI_Bloodpressure <- merge(BMI, Bloodpressure, by = c("Country","Year", "Gender")) %>% na.omit() 
+BMI_Bloodpressure_Cholesterol <- merge(BMI_Bloodpressure, Cholesterol, by = c("Country", "Year", "Gender"))
+
+
+# Create data set data
+data <- BMI_Bloodpressure_Cholesterol 
+
+# Read Sugar related .csv file, Reshape and Merge dataframe
+Sugar <- read.csv("indicator sugar_consumption.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Sugar)[1] <- "Country" # Rename the first column
+Sugar <- gather(Sugar, Year, "Sugar", 2:ncol(Sugar)) # Reshape dataframe
+Sugar$Year <- factor(Sugar$Year, ordered = T) # Ordered column Year
+Sugar[Sugar == 0.0] <- NA # Repalce all zeros with NA
+Sugar<- Sugar %>% na.omit() # Omit na
+
+#Merge data & Sugar
+data_Sugar <- merge(data, Sugar, by = c("Country", "Year"))
+data <- data_Sugar
+
+# Read Food related .csv file, Reshape 
+Food <- read.csv("indicator food_consumption.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Food)[1] <- "Country" # Rename the first column
+Food <- gather(Food, "Year", "Food", 2:ncol(Food)) # Reshape dataframe
+Food$Year <- factor(Food$Year, ordered = T) # Ordered column Year
+
+
+# Merge data & Food
+data_Food <- merge(data,Food, by = c("Country", "Year"))
+data <- data_Food
+
+# Read Income related .csv file, Reshape
+Income <- read.csv("indicator gapminder gdp_per_capita_ppp.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Income)[1] <- "Country" # Rename the first column
+Income <- gather(Income, "Year", "Income", 2:ncol(Income)) # Reshape dataframe
+Income$Year <- factor(Income$Year, ordered = T) # Ordered column Year
+
+# Merge data & Income
+data_Income <- merge(data, Income, by = c("Country", "Year"))
+data <- data_Income
+data <- data %>% na.omit() # data without NA values
+
+# Read "indicator life_expectancy_at_birth.csv"
+Life<-read.csv("indicator life_expectancy_at_birth.csv", header = TRUE, check.names = FALSE) # Read .csv file
+names(Life)[1] <- "Country" # Rename the first column
+Life <- gather(Life, "Year", "Life_expectancy", 2:ncol(Life)) # Reshape dataframe
+Life$Year <- factor(Life$Year, ordered = T) # Ordered column Year
+
+# Merge data & Life dataframe
+data_Life <- merge(data, Life, by = c("Country","Year"))
+data <- data_Life
+
+data <- data %>% na.omit() # Omit the NA values in data
+
+
+countries_eu <- c("Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czech Rep.", "Denmark", "Estonia", "Finland", "France", "Georgia","Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Kazakhstan", "Latvia"," Lithuania", 
+ "Luxembourg", "Macedonia, FYR", "Malta", "Moldova", "Montenegro", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Russia", "Serbia", "Slovak Republic", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "United Kingdom") # EU countries 
+
+nordic_c <- c("Denmark", "Finland", "Iceland", "Norway", "Sweden") # Northern countries 
+south_c <- c("Cyprus","Greece", "Italy", "Malta", "Portugal", "Spain", "Turkey" ) # Southern countries
+east_c <- c("Albania", "Azerbaijan", "Armenia", "Belarus", "Azerbaijan", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Czech Rep.", "Estonia", "Georgia", "Hungary",  "Kazakhstan", "Latvia"," Lithuania",  "Macedonia, FYR",  "Moldova", "Montenegro", "Poland", "Romania", "Russia", "Serbia", "Slovak Republic", "Slovenia", "Ukraine") # Eastern countries
+western_c <- c("Andorra",  "Austria",  "Belgium", "France", "Germany", "Ireland", "Luxembourg", "Netherlands", "Switzerland", "United Kingdom") # Western countries
+
+
+data_eu <- filter(data, Country %in% countries_eu) # Create the data set data_eu, which is subset of data. Contains only european countries
+data_eu$Country <- as.factor(as.character(data_eu$Country)) # Convert variable Country to factor
+data_eu$Year <- as.factor(as.character(data_eu$Year)) # Convert variable Year to factor
+data_eu$Gender <- as.factor(as.character(data_eu$Gender)) # Convert variable Gender to factor
+
+data_eu$Region <- NA # Set all values in Region to "NA"
+
+data_eu$Region[data_eu$Country %in% nordic_c] <- "Northern Europe" # If Country located in Northern Europe set Region to "Northern Europe"
+data_eu$Region[data_eu$Country %in% south_c] <- "Southern Europe" #  If Country located in Southern Europe set Region to "Southern Europe"
+data_eu$Region[data_eu$Country %in% east_c] <- "Eastern Europe" # If Country located in Eastern Europe set Region to "Eastern Europe"
+data_eu$Region[data_eu$Country %in% western_c] <- "Western Europe" # If Country located in Western Europe set Region to "Western Europe"
+
+data_eu$Region <- as.factor(as.character(data_eu$Region)) # Convert variable Region to factor
+     
+
+# Create three periods in which the data_eu will be examined. Investigate the data_eu in one period many details can be discovered.
+
+period_1 = c("1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989")
+period_2 = c("1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999")
+period_3 = c("2000", "2001", "2002", "2003", "2004")
+
+#Create variable Period
+data_eu$Period[data_eu$Year %in% period_1] <- "1980 - 1989" # If Year in period_1 set Period to "1980 - 1989"
+data_eu$Period[data_eu$Year %in% period_2] <- "1990 - 1999" # If Year in period_2 set Period to "1990 - 1999"
+data_eu$Period[data_eu$Year %in% period_3] <- "2000 - 2004" # If Year in period_3 set Period to "2000 - 2004"
+
+data_eu$Period <- as.factor(as.character(data_eu$Period)) #Covert Period to factor
+
+```
+
+
+
+```{r echo = FALSE}
+write.csv(data_eu, file = "data_eu.csv", row.names=FALSE)
+```
+

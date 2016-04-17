@@ -1,0 +1,1296 @@
+---
+title: "Life Expectancy Exploration"
+author: "Anna Anesiadou-Hansen"
+date: "April 17, 2016"
+output: html_document
+---
+
+```{r echo = FALSE, message=FALSE, warning=FALSE, packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+library(ggplot2)
+library(dplyr)
+library(psych)
+library(gridExtra)
+library(tidyr)
+library(memisc)
+theme_set(theme_minimal(12))
+
+```
+
+```{r echo=FALSE, echo = FALSE, message=FALSE, warning=FALSE, Load_the_Data}
+data_eu <- read.csv("data_eu.csv", header = TRUE, check.names = FALSE) # Read .csv file
+data_eu$Year <- as.factor(as.character(data_eu$Year)) # Convert variable Year to factor
+```
+
+# Univariate Plots Section
+
+Summarize the data set `data_eu`.
+
+The `data_eu` has  `r dim(data_eu)[1]` objectives and `r dim(data_eu)[2]` variables.
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+dim(data_eu)
+```
+
+The variables in `data_eu` are: 
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+names(data_eu) 
+```
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+str(data_eu)
+```
+
+The variable `Country` contains information for forty different European countries.
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+nlevels(data_eu$Country)
+```
+
+These are:
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+levels(data_eu$Country)
+```
+
+The variable `Year` contains information for  `r nlevels(data_eu$Year)` years. 
+The levels of variable `Year` are:
+
+```{r echo = FALSE}
+levels(data_eu$Year)
+```
+
+The variable `Gender` has the following levels.
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+levels(data_eu$Gender)
+```
+
+The variable `Region` has `r nlevels(data_eu$Region)` levels. These are:
+
+```{r echo = FALSE}
+levels(data_eu$Region)
+```
+
+The variable `Period` has `r nlevels(data_eu$Period)` levels. These are:
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+levels(data_eu$Period)
+```
+
+The summary of the data frame is shown below:
+```{r echo = FALSE}
+summary(data_eu)
+```
+
+The data frame `data_eu` contains `r nlevels(data_eu$Country)` different European countries. The period which the data `data_eu` is gathered is from 1980 until 2004, that means `r nlevels(data_eu$Year)` years and for both gender female and male.
+Roughly 75% have an BMI of more than 25, which actually is overweight. In average people have in all countries systolic blood above the recommend 120 mm Hg. The mean value of cholesterol is 5.385 mmol/L, age standardized mean, and indicates high risk for heart diseases. The average of sugar consumption per day and per person is 102.22 grams. The average daily kilocalorie consumption per person is 3180. The maximum average age is 81.1 years. The half of all people earn $21216 per year. 
+
+## Life expectancy 
+```{r echo = FALSE, Life_Expectancy}
+ggplot(aes(Life_expectancy), data = data_eu) +
+  geom_histogram(bins = 19, fill = "blue", color = "green") +
+  scale_x_continuous(breaks = seq(60, 82, 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  scale_y_continuous(breaks =seq(0,200, 10)) +
+  labs(x = "Life Expectancy (Years)", y = "Count", title = "Histogram Life Expectancy in Europe between 1980-2004")
+```
+
+* The distribution is negative skewed. The mean value is `r round(mean(data_eu$Life_expectancy),2)` and median value is `r round(median(data_eu$Life_expectancy), 3)`.
+* The life expectancy of 76 has the highest frequency.
+
+Which country has the lowest life expectancy in Europe?
+```{r echo = FALSE, min_life_expectancy}
+subset(data_eu, data_eu$Life_expectancy == min(data_eu$Life_expectancy))
+```
+
+It is Turkey in 1980.
+
+Which country has the highest life expectancy in Europe?
+
+```{r echo = FALSE, max_life_expectancy}
+subset(data_eu, data_eu$Life_expectancy == max(data_eu$Life_expectancy))
+```
+
+It is Iceland in 2004.
+The results of life expectancy summary are shown below.
+
+```{r echo = FALSE, summary}
+summary(data_eu$Life_expectancy)
+```
+
+Boxplot life expectancy by country between 1980-2004
+
+```{r echo = FALSE, Life_Expectancy_Country}
+ggplot(aes(x = Country, y = Life_expectancy), data = data_eu) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  scale_y_continuous(breaks = seq(14, 82, 2)) +
+  labs(x = "Country", y = "Life Expectancy (Age)", title = "Boxplot Life Expectancy by Country in Europe between 1980-2004")
+
+```
+
+But which countries have in average lower life expectancy than than the average life expectancy of all Europeans which is `r mean(data_eu$Life_expectancy)` between 1980-2004?
+
+```{r echo = FALSE}
+data_eu %>% group_by(Country) %>% summarise(meanL = mean(Life_expectancy)) %>% arrange(meanL) %>% head(19)
+```
+
+It is interesting to see that all countries except of Turkey are Eastern European countries.
+
+## In the next step the distribution of Cholesterol has to be presented.
+
+```{r echo = FALSE, Cholesterol}
+qplot(Cholesterol, data = data_eu,  color = I("Green"), fill = I("Blue"), binwidth = 0.1,  xlab = "Cholesterol (mmol/L, Age Standardized Mean )", ylab = "Count", main = "Histogram of Cholesterol in Europe between 1980-2004") 
+```
+
+The histogram above looks like a normal distribution. 
+
+```{r echo = FALSE, summary_cholesterol}
+summary(data_eu$Cholesterol)
+```
+
+There is no big difference between mean value (`r round(mean(data_eu$Cholesterol),3)`) and median value (`r round(median(data_eu$Cholesterol),3)`). Only 25% of people have normal cholesterol values.
+
+I wonder which country has the highest values.
+```{r echo = FALSE, max_cholesterol_country}
+subset(data_eu, data_eu$Cholesterol >= 6.2)
+```
+
+Male in United Kingdom between 1980-1981 have the highest cholesterol value, which is `r max(data_eu$Cholesterol)`.
+
+Which country has the lowest cholesterol value?
+```{r echo = FALSE, min_cholesterol_country}
+subset(data_eu, data_eu$Cholesterol <= min(data_eu$Cholesterol)) 
+```
+
+It is Azerbaijan in 2004.
+
+Boxplot Cholesterol vs. Country
+
+```{r echo = FALSE, cholesterol_country}
+ggplot(aes(x = Country, y = Cholesterol), data = data_eu) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  scale_y_continuous(breaks = seq(14, 82, 2)) +
+  labs(x = "Country", y = "Cholesterol (mmol/L, Age Standardized Mean)", title = "Boxplot Cholesterol by Country in Europe between 1980-2004")
+
+```
+
+Which countries have normal cholesterol values?
+
+```{r echo = FALSE, normal_cholesterol_country}
+data_eu %>% group_by(Country) %>% summarise(meanL = mean(Cholesterol)) %>% arrange(meanL) %>% head(20) %>% filter(meanL <= 5.2)
+```
+
+Except of Turkey all countries with normal cholesterol values are Eastern European countries.
+
+
+## Food
+The histogram of variable `Food` is shown below.
+
+```{r echo = FALSE, food}
+qplot(Food, data = data_eu,  color = I("blue"), fill = I("green"), binwidth = 60,  xlab = "Daily Intake of Calories per Person", ylab = "Count", main = "Histogram Calorie Intake in Europe between 1980-2004" ) +
+  scale_x_continuous(breaks = seq(0, 3800, 200)) +
+  scale_y_continuous(breaks = seq(0, 100, 50)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1)) +   
+  theme(legend.key.size = unit(0.5, "cm")) 
+```
+
+The distribution is negative skewed with the highest calorie frequency at 3400.
+
+The summary for `Food` can be seen below:
+
+```{r echo = FALSE, summary_food}
+summary(data_eu$Food)
+```
+
+The data set `data_eu` does not make any distinction between female and male, age, height, weight and activity of each person regarding the daily need of food supply. The average energy supply for females and males are the same. According to the summary 50% of people have a daily intake up to `r median(data_eu$Food)` calories per day and on average `r mean(data_eu$Food)` calories which is high if one thinks that the [average amount of calories](https://en.wikipedia.org/wiki/Food_energy) for both sex is 2400 calories (men: 2700 calories, women: 2100 calories, average: 2400 calories).
+
+
+The energy intake by year shows the next boxplot.
+
+```{r echo = FALSE, year_food}
+ggplot(aes(x = Year, y = Food), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean,color = "red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +  
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Year", y = "Food (Calories per day per person)", title = "Boxplot Food Energy Intake in Europe between 1980-2004 ")
+
+```
+
+The average intake of food energy (red dots) is over the recommended for all years. 
+But how does the intake of food energy looks by country?
+
+```{r echo = FALSE, country_food}
+ggplot(aes(x = Country, y = Food), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean,color = "red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +  
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Year", y = "Food (Calories per day per person)", title = "Boxplot Food Energy Intake by European Country \n between 1980-2004 ")
+```
+
+Which European countries has normal average in calorie consumption?
+
+```{r echo = FALSE, normal_food}
+data_eu %>% group_by(Country) %>% summarise(meanF = mean(Food)) %>% arrange(meanF) %>% head(20) %>% filter(meanF <= 2400)
+```
+
+## Sugar
+
+```{r echo = FALSE, warning=FALSE, Sugar}
+qplot(Sugar, data = data_eu,  color = I("Black"), fill = I("orange"), binwidth = 10,  xlab = "Sugar (Grams per Person per Day)", ylab = "Count", main = "Histogram of Sugar Consum in Europe between 1980-2004") +
+  scale_x_continuous(limits = c(0,200), breaks = seq(0,200,20)) 
+
+```
+
+The distribution is negative skewed. The highest frequency is around 120 grams per day and person. Which actually is higher than the recommended value.
+
+Below the summary of Sugar. 
+
+```{r echo = FALSE, summary_sugar}
+summary(data_eu$Sugar)
+```
+
+The median is `r round(median(data_eu$Sugar), 1)` and the mean is `r round(mean(data_eu$Sugar), 1)`.
+A [healthy sugar consumption](http://www.who.int/mediacentre/factsheets/fs394/en/) should be 5% of the total energy intake per person, that means 120 calories per person per day. Which is equivalent to `r round(120/3.87,0) ` grams per day.
+
+```{r echo = FALSE, Sugar_Country}
+ggplot(aes(y = Sugar, x = Country), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean, color = "red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 10)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(y = "Sugar (Grams per Person per Day)", x = "Country", title = "Boxplot  Sugar Daily Consum in Europe between 1980-2004")
+```
+
+In which country is the sugar consumption `r min(data_eu$Sugar)` grams or `r max(data_eu$Sugar)` calories per day?
+
+```{r echo = FALSE}
+distinct(subset(data_eu, data_eu$Sugar == 5.48 | data_eu$Sugar >= 167.12)[c(1, 2, 7, 10)])
+```
+
+Armenia and Estonia were the countries with the lowest respectively highest sugar consumption in Europe.
+
+## BMI
+
+```{r echo = FALSE, BMI}
+qplot(BMI_Index, data = data_eu,  color = I("Green"), fill = I("Blue"), binwidth = 0.2,  xlab = "BMI Index", ylab = "Count", main = "Histogram of BMI Index") +
+  scale_x_continuous(breaks = seq(23, 28, 0.5)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1)) +   
+  theme(legend.key.size = unit(0.5, "cm")) 
+```
+
+Is a positive skewed distribution. The highest peak shows that people have a BMI over 25 which means overweight. 
+
+```{r echo = FALSE, summary_BMI}
+summary(data_eu$BMI_Index)
+```
+
+50% of the people have light overweight. Only 25% of all people in Europe have a normal valued BMI.
+
+```{r echo = FALSE, BMI_year}
+ggplot(aes(Year, BMI_Index), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean, color = "red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Year", y = "BMI Index", title = "BMI Index in Europe between 1980-2004")
+```
+
+Between 1980-2004 the BMI index has increased.
+
+
+## Systolic Blood Pressure
+
+```{r echo = FALSE, bloodpressure}
+qplot(Bloodpressure, data = data_eu,  color = I("green"), fill = I("red"), binwidth = 0.8,  xlab = "Systolic Blood Pressure (mm Hg)", ylab = "Count", main = "Histogram of Systolic Blood Pressure in Europe between 1980-2004") + scale_x_continuous(breaks = seq(118,145,2))
+```
+
+The histogram of the Systolic blood pressure shows that the distribution is negative skewed. 50% of the people in Europe has a systolic blood pressure 132 mm Hg (hypertensive crisis).
+
+```{r echo = FALSE, summary_bloodpressure}
+summary(data_eu$Bloodpressure)
+```
+
+The summary confirmed this. The mean and median values are `r round(mean(data_eu$Bloodpressure), 1)` mm Hg respective `r round(median(data_eu$Bloodpressure), 1)` mm Hg. 
+
+```{r echo = FALSE, density_bloodpressure}
+ggplot(aes(x = Bloodpressure), data = data_eu) +
+  geom_density(fill = "red", alpha = 1/5) +
+  labs(x = "Systolic Blood Pressure (mm Hg)", y = "Density", title = "Density of Systolic Blood Pressure in Europe between 1980-2004")
+```
+
+The likelihood that people get blood pressure values around 130 is very high.
+
+How is the development of systolic blood pressure from 1980 until 2004?
+
+```{r echo = FALSE, bloodpressure_year}
+ggplot(aes(Year, Bloodpressure), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean, color = "red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Year", y = "Systolic Blood Pressure (mm Hg)", title = "Boxplot Systolic Blood Pressure in Europe \n by Year")
+```
+
+From 1980 until 1991 the blood pressure is decreasing. In 1992 for first time a small increase in blood pressure is noticed. Thereafter again an decrease until 2004. Is the usage of medicine the reason of decreasing the systolic blood pressure?
+
+
+How does it look for each country during the period 1980-2004?
+
+```{r echo = FALSE, bloodpressure_country}
+ggplot(aes(Country, Bloodpressure), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean, color = "red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Country", y = "Systolic Blood Pressure (mm Hg)", title = "Boxplot Systolic Blood Pressure by European Country between 1980-2004")
+```
+
+The majority of countries have high systolic blood pressure. The red dot denotes the average value.
+
+But which countries have a normal systolic blood pressure?
+```{r echo = FALSE, max_bloodpressure_country}
+distinct(subset(data_eu, data_eu$Bloodpressure < 120 )[c(1)])
+```
+
+Iceland is the only country with normal systolic blood pressure.
+
+Which countries have an average systolic blood pressure greater than 140 mm Hg?
+
+```{r echo = FALSE, very_high_bloodpressure}
+distinct(subset(data_eu, data_eu$Bloodpressure > 140 )[c(1)])
+```
+
+## Income
+
+The next plot shows the histogram of variable `Income`.
+
+```{r echo = FALSE}
+qplot(Income, data = data_eu,  color = I("blue"), fill = I("green"), binwidth = 2000,  ylab = " Count", xlab = "Income ($ Per Person Purchasing Power Parities)", main = "Histogram of Income in Europe between 1980-2004") +
+scale_x_continuous(breaks = seq(0,65000, 1000)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 7)) +   
+  theme(legend.key.size = unit(0.5, "cm")) 
+```
+
+The distribution of the income per person is skewed. Obviously there is an inequality of income. Which actually was expected due to difference in development of countries. Political, geographical and economical factors have also an impact on income.
+
+```{r echo = FALSE, summary_income}
+summary(data_eu$Income)
+```
+
+Next I look closer to the outliers. I am interesting in which countries have a income of $`r min(data_eu$Income)` per year and person in average.
+
+```{r echo = FALSE, min_income_country}
+subset(data_eu, data_eu$Income == min(data_eu$Income)) %>% group_by(Country)
+```
+
+It was Bosnia and Herzegovina in 1993. This can be explained by the Bosnian war between 1992-1995.
+
+Which country has the highest income per person per year in Europe?
+
+```{r echo = FALSE, max_income_country}
+subset(data_eu, data_eu$Income == max(data_eu$Income))%>% group_by(Country)
+```
+Norway is the country with the highest income in Europe. It was expected because Norway is export country of oil and gas.
+
+How do the various countries score regarding income?
+
+```{r echo = FALSE, income_country}
+ggplot(aes(Country, Income), data = data_eu) +
+  geom_boxplot(aes(fill = Region)) +
+  scale_y_continuous(breaks = seq(0,60000, 5000)) +
+  geom_point(stat = "summary", fun.y = mean, color = "red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Country", y = "Income ($ PPP)", title = "Boxplot Income in Europe between 1980-2004")
+```
+
+Countries in Eastern Europe have the lowest income among the European countries, followed by countries in Southern Europe. In Western and Northern Europe the income is high, highest is in Norway.
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+
+There are 1638 observations in the data set `data_eu` with 12 features. These are: `Country, Year, Gender, BMI Index, Bloodpressure, Cholesterol, Sugar, Food, Income, Life_expectancy Region and Period`. The variables `Country`, `Year`, `Gender`, `Region` and `Period` are ordered factor variables with the following levels.
+
+**Country** is ordered alphabetic and have `r nlevels(data_eu$Country)` levels:
+  From Albania to United Kingdom  
+  
+**Year** is ordered and have `r nlevels(data_eu$Year)` levels:
+  Year is between 1980-2004
+  
+**Gender** have two levels:
+ Male and Female
+ 
+* 75% have an BMI of greater than 25 which means overweight
+* 50% of all people have a hypertensive crisis systolic blood pressure 132.2 (mm Hg)
+* The mean value of `Cholesterol` is 5.385 which is already on the borderline to high risk. 
+* The average of sugar consumption per day and per person is 102.22 grams 
+* The average daily calorie intake per person is 3180  
+* The maximum average age is 81.10 years and the minimum 62.70
+* 50% of all people earn $21216 per year
+
+**Region** has four levels:
+  Eastern Europe, Northern Europe, Southern Europe, and Western Europe
+  
+**Period** has three levels:
+  1980 - 1989, 1990 - 1999 and 2000 - 2004
+
+### What is/are the main feature(s) of interest in your dataset?
+
+The main features in the data set `data_eu` are `Life_expectancy`, `Cholesterol`, `Bloodpressure` and `Income`. I think that systolic blood pressure and cholesterol play an important role in human's health and therefore on life expectancy. On the other hand I think that income has a positive impact on life expectancy since it enables a better health care and hence a longer life.
+
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+
+Other features which can help the investigation is `Food`, `Sugar`, `BMI_Index`, `Region` and `Country`.
+The daily amount of calories that a person intakes and the amount of sugar are important factors for the weight. One indicator of a person's health is the BMI. `Region`  divides Europe not only geographical but also economical that means depended on which region people live increase/decrease the chance to prolong the life. On the other hand `Country` is also a factor which impacts people's health. If a country has a sophisticated health system and its population has equal access to the public health care services then the life expectancy is also higher. 
+
+### Did you create any new variables from existing variables in the dataset?
+
+Yes, I did. I added into the data set the variable `Region` to order the European countries by region, since region is not only a geographical distinction but also indicates a different living affluence. I also added into the data set the variable `Period` in order to investigate the change of life expectancy over time.
+
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+
+The data set Cholesterol is a merging data set of Cholesterol data set for male and female respective.
+The data set Systolic Blood Pressure is a merging data set of Systolic Blood Pressure data set for male and female respective.
+The data set BMI is a merging data set of BMI data set for male and female respective.
+
+The remaining data sets do not distinct between male and female, they have one value for both gender. 
+
+# Bivariate Plots Section
+### Life_expectancy vs. Cholesterol
+
+The first scatterplot shows the relationship between life expectancy vs. cholesterol in Europe between 1980-2004. 
+
+```{r echo = FALSE, life_cholesterol}
+ggplot(aes(y = Life_expectancy, x = round(data_eu$Cholesterol,1)), data = data_eu) +
+  geom_point(alpha = 1/5, color = "orange") +
+  scale_x_continuous(breaks = seq(4.5,6.3,0.1)) +
+  scale_y_continuous(limits = c(62,83), breaks = seq(62,83,0.5)) +
+  geom_vline(xintercept = 5.2, linetype = 6, color = "green") +
+  geom_hline(yintercept = 80.1, linetype=5, color = "black") +
+  geom_line(stat = "summary", fun.y = mean, linetype = 5, color = "black") +
+  geom_line(stat = "summary", fun.y = median, linetype = 6, color = "red") +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.95), linetype = 2, color = 'purple')  +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.1), linetype = 2, color = 'dark green')  +
+  annotate("text", label = "5.2 mmol/l Cholesterol", y = 65, x = 5.25, size = 4, color = "green", angle = 90) +
+   labs(y = "Life expectancy (Average Age)", x = "Cholesterol (mmol/L)", title = "Life expectancy and Cholesterol in Europe between 1980-2004") 
+```
+
+As older people get, as higher are their cholesterol values. This is true until the cholesterol of around 5.5 mmol/L, age standardized mean. Then the life expectancy decreases as cholesterol get higher. The scatterplot shows also that people live shorter even when they do not have high cholesterol values. This is contrary to the proclaimed statement that cholesterol should be below 5.2 mmol/L, age standardized mean. 
+
+The quantiles of data_eu for 10%, 50% and 90% are represented by dark green, red and purple dashed line respective. The mean is shown by a black dashed line. 
+10%, 50% and 90% of people with cholesterol value below 5.2, which corresponds to normal cholesterol, have a life expectancy under 68.2, 71.8 and 79.4 years respectively. But looking at the group of people with cholesterol values equal or greater than 5.2, which means borderline high risk and high risk for many diseases, the life expectancy is under 75.4, 77.6 and 80.1 respective. 
+
+The results show that in general the group of people with high cholesterol lives longer than people with normal cholesterol values. 
+
+The correlation of `Life_expectancy` and `Cholesterol`is `r round(cor(data_eu$Life_expectancy, data_eu$Cholesterol), 2)`.
+
+```{r echo = FALSE, cor_life_Cholesterol}
+cor(data_eu$Life_expectancy, data_eu$Cholesterol)
+```
+
+The variables `Life_expectancy` and `Cholesterol` are moderately related.
+
+Next I look closer at life expectancy by region and country.
+
+```{r echo = FALSE, life_Region}
+ggplot(aes(x = Region, y = Life_expectancy), data = data_eu) +
+  geom_boxplot() +
+  scale_y_continuous(breaks = seq(60,82,1)) +
+  geom_point(stat = "summary", fun.y = mean, color = "red") + 
+  geom_hline(yintercept = 74.15, linetype = 6, color = "green") +
+  annotate("text", label = "74.15 average age", color = "green", x = 1.5, y= 74.5) +
+   labs(y = "Life expectancy (Average Age)", x = "Region", title = "Life expectancy in European Regions between 1980-2004")
+```
+
+People in Eastern Europe have the lowest in average life expectancy in Europe.
+
+```{r echo = FALSE, life_country}
+ggplot(aes(x = Country, y = Life_expectancy), data = data_eu) +
+  geom_boxplot() +
+  scale_y_continuous(breaks = seq(60, 80, 1)) +
+  geom_point(stat = "summary", fun.y = mean, color = "red") + 
+  geom_hline(yintercept = 74.15, linetype = 6, color = "green") +
+  labs(x = "Country", y = "Life Expectancy (year)", title = "Boxplot Life Expectancy by European Country between 1980-2004") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +  
+  theme(legend.key.size = unit(0.5, "cm"))
+```
+
+People in Kazakhstan have in average the lowest life expectancy in Europe. 
+
+Below is mean value of life expectancy in Eastern, Southern, Western and Northern Europe.
+
+```{r echo = FALSE, mean_region_life}
+mean(subset(data_eu, data_eu$Region == "Eastern Europe")$Life_expectancy)
+mean(subset(data_eu, data_eu$Region == "Southern Europe")$Life_expectancy)
+mean(subset(data_eu, data_eu$Region == "Western Europe")$Life_expectancy)
+mean(subset(data_eu, data_eu$Region == "Northern Europe")$Life_expectancy)
+```
+
+The median value of life expectancy in Eastern, Southern, Western and Northern Europe are:
+
+```{r echo = FALSE, median_region_life}
+median(subset(data_eu, data_eu$Region == "Eastern Europe")$Life_expectancy)
+median(subset(data_eu, data_eu$Region == "Southern Europe")$Life_expectancy)
+median(subset(data_eu, data_eu$Region == "Western Europe")$Life_expectancy)
+median(subset(data_eu, data_eu$Region == "Northern Europe")$Life_expectancy)
+```
+
+The life expectancy is in average lowest in Eastern Europe. Followed by Southern and Western Europe. The highest in average life expectancy has the Northern Europe. The median life expectancy in Eastern Europe is the lowest in Europe, followed by Western, Southern, and Northern Europe. 
+
+The cholesterol is in average under the recommended value of 5.2 mmol/L, age standardized mean in Eastern Europe. 
+The boxplot below visualizes this.
+
+```{r echo = FALSE, warning = FALSE, Cholesterol_Region}
+ggplot(aes(x = Region, y = Cholesterol), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y= mean, color = "red") +
+  scale_y_continuous(breaks = seq(4.5,6.2,0.2)) +
+  geom_hline(yintercept = 5.2, linetype = 6, color = "green") +
+  annotate("text", label = "5.2 mmol/L, Age Standardized Mean", color = "green", x = 2.2, y = 5.16, size = 3) +
+  labs(x = "Region", y="Cholesterol (mmol/L, Age Standardized Mean)", title = "Boxplot European Region and Cholesterol between 1980-2004")
+
+```
+
+Below is the mean cholesterol values in Eastern, Southern, Western and Northern Europe.
+
+```{r echo = FALSE, mean_regions}
+mean(subset(data_eu, data_eu$Region == "Eastern Europe")$Cholesterol)
+mean(subset(data_eu, data_eu$Region == "Southern Europe")$Cholesterol)
+mean(subset(data_eu, data_eu$Region == "Western Europe")$Cholesterol)
+mean(subset(data_eu, data_eu$Region == "Northern Europe")$Cholesterol)
+```
+
+The median cholesterol values in Eastern, Southern, Western and Northern Europe: 
+
+```{r echo = FALSE, median_regions}
+median(subset(data_eu, data_eu$Region == "Eastern Europe")$Cholesterol)
+median(subset(data_eu, data_eu$Region == "Southern Europe")$Cholesterol)
+median(subset(data_eu, data_eu$Region == "Western Europe")$Cholesterol)
+median(subset(data_eu, data_eu$Region == "Northern Europe")$Cholesterol)
+```
+
+The cholesterol value in Eastern Europe is in average the lowest of all other regions. Followed by Southern, Western and Northern Europe. The highest cholesterol value in average has the Northern Europe. 
+
+Eastern Europe has in average the lowest life expectancy and the lowest cholesterol value. Followed by Southern, Western and Northern Europe. Northern Europe has in average the highest life expectancy and the highest in average cholesterol value. But this is contrary to what it was expected. 
+
+### Life expectancy vs. Systolic Blood Pressure
+
+The first scatterplot shows the relationship between life expectancy vs. systolic blood pressure.
+
+```{r echo = FALSE, warning = FALSE, life_bloodpressure}
+ggplot(aes(y = Life_expectancy, x = round(data_eu$Bloodpressure,0)), data = data_eu) +
+  geom_point(alpha = 1/5, color = "orange") +
+  labs(y = "Life expectancy (Average Age)", x = "Systolic Blood Pressure (mm Hg)", title = "Life expectancy and Systolic Blood Pressure in Europe \n between 1980-2004") +
+  scale_x_continuous(breaks = seq(119,143, 1)) +
+  scale_y_continuous(limits = c(62,83), breaks = seq(62,83,0.4)) +
+  geom_vline(xintercept = 120, linetype = 6, color = "green") +
+  geom_vline(xintercept = 139, linetype = 6, color = "brown") +
+  geom_line(stat = "summary", fun.y = mean, linetype = 5, color = "black") +
+  geom_line(stat = "summary", fun.y = median, linetype = 6, color = "blue") +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.95), linetype = 2, color = 'purple')  +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.1), linetype = 2, color = "cyan3") +
+  annotate("text", label = "120 mm Hg Systolic Bloodpressure", y = 67, x = 120.5, size = 4, color = "green", angle = 90) +
+  annotate("text", label = "139 mm Hg Systolic Bloodpressure", y = 67, x = 140, size = 4, color = "brown", angle = 90) 
+```
+
+
+Few countries have desired systolic blood pressure value.
+```{r echo = FALSE, subset_desired}
+subset(data_eu, data_eu$Bloodpressure < 120)
+```
+
+Only women had desired systolic blood pressure in Iceland in 2004.
+The most European countries have prehypertension systolic blood pressure.
+With a systolic blood pressure greater than 134 mm Hg the life expectancy decreases.
+
+There are few data values with systolic blood pressure equal or less than 126 mm Hg. I make some adjustments in the x-axis and focus on this area. 
+
+```{r echo = FALSE, warning = FALSE, life_round_bloodpressure}
+ggplot(aes(y = Life_expectancy, x = round(data_eu$Bloodpressure,0)), data = data_eu) +
+  geom_point(alpha = 1/5, color = "orange") +
+  labs(y = "Life expectancy (Average Age)", x = "Systolic Blood Pressure (mm Hg)", title = "Life expectancy and Systolic Blood Pressure between 120 mm Hg - 126 mm Hg in Europe") +
+  scale_x_continuous(limits= c(119,126), breaks = seq(119,126, 1)) +
+  scale_y_continuous(limits = c(62,83), breaks = seq(62,83,0.4)) +
+  geom_vline(xintercept = 139, linetype = 6, color = "brown") +
+  geom_line(stat = "summary", fun.y = mean, linetype = 5, color = "black") +
+  geom_line(stat = "summary", fun.y = median, linetype = 6, color = "blue") +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.95), linetype = 2, color = 'purple')  +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.1), linetype = 2, color = "cyan3") +
+  annotate("text", label = "139 mm Hg Systolic Blood Pressure", y = 67, x = 140, size = 5, color = "brown", angle = 90) 
+```
+
+At `r round(min(data_eu$Bloodpressure),0)` mm Hg the maximum life expectancy is reached. Thereafter life expectancy decreases as systolic blood pressure increases. 
+
+As next step I look closer the `data_eu` but for systolic values between 126 mm Hg and 139 mm Hg, because the most data is concentrated in this interval.
+
+```{r echo = FALSE, warning = FALSE, life_round_bloodpressure_127_139}
+ggplot(aes(y = Life_expectancy, x = round(data_eu$Bloodpressure,0)), data = data_eu) +
+  geom_point(alpha = 1/5, color = "orange") +
+  labs(y = "Life expectancy (Average Age)", x = "Systolic Blood Pressure (mm Hg)", title = "Life expectancy vs. Systolic Blood Pressure between 126 mm Hg - 139 mm Hg in Europe") +
+  geom_smooth() +
+  scale_x_continuous(limits= c(126,139), breaks = seq(126,139, 1)) +
+  scale_y_continuous(limits = c(62,83), breaks = seq(62,83,0.4)) +
+  geom_vline(xintercept = 139, linetype = 6, color = "brown") +
+  geom_line(stat = "summary", fun.y = mean, linetype = 5, color = "black") +
+  geom_line(stat = "summary", fun.y = median, linetype = 6, color = "blue") +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.95), linetype = 2, color = 'purple')  +
+  geom_line(stat = "summary", fun.y = quantile, fun.args=list(probs=0.1), linetype = 2, color = "cyan3") +
+  annotate("text", label = "Quantile = 0.1", y = 64.8, x = 128, size = 4, color = "cyan3") +
+  annotate("text", label = "Quantile = 0.95", y = 77.8, x = 128, size = 4, color = "purple") +
+  annotate("text", label = "Quantile = 0.5", y = 75.8, x = 128, size = 4, color = "blue") +
+  annotate("text", label = "Mean", y = 73.8, x = 127.5, size = 4, color = "black") 
+```
+
+Only 10% of the Europeans have a  life expectancy below 70 years, 50% of Europeans have a life expectancy below 77.6 and 95% below 80 years. The quantile 95%, 50% and the mean value decreases as the systolic blood pressure increases. But contrary, the quantile of 10% increases as the systolic blood pressure increases.
+
+Create a subset of 0.1 quantile, that means systolic blood pressure between 127 mm Hg-139 mm Hg and life expectancy below 70 years. Thereafter I create boxplot `Country` vs. `Life_expectancy`.
+```{r echo = FALSE, life_round_bloodpressure_greather_139}
+distinct(subset(data_eu, data_eu$Bloodpressure <= 139 & data_eu$Bloodpressure> 126 & data_eu$Life_expectancy <= 70, select = c(Country))) 
+```
+
+All countries except of Turkey are Eastern European countries.
+This can also been shown below with a boxplot.
+
+```{r echo = FALSE, warning = FALSE, life_round_bloodpressure_boxplot_127_139}
+ggplot(aes(x = Country, y = Life_expectancy), data = subset(data_eu, data_eu$Bloodpressure <= 139 & data_eu$Bloodpressure> 126 & data_eu$Life_expectancy <= 70)) +
+  geom_boxplot(aes(fill = Region)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Country", y = "Life_expectancy (Average Age)", title = "Life Expectancy by European Country \n with Systolic Blood Pressure between 127 mm Hg-139 mm Hg")
+```
+
+Characteristic of this data set is that the information is taken from 1992 except in case of Turkey and Hungary which is taken from 1980. 
+
+But what about the life expectancy with systolic blood pressure greater than 139 mm Hg?
+
+```{r echo = FALSE, warning = FALSE, life_round_bloodpressure_boxplot_greater_139}
+ggplot(aes(x = Country, Life_expectancy), data = subset(data_eu, data_eu$Bloodpressure > 139)) +
+  geom_boxplot(aes(fill = Region)) +
+  scale_y_continuous(breaks = seq(69, 76, 1)) +
+   labs(x = "Country", y = "Life_expectancy (Average Age)", title = "Life Expectancy by European Country \n with Systolic Blood Pressure greater than 139 mm Hg \n between 1980 - 2004")
+```
+
+Some few countries have a systolic blood pressure greater than 139 mm Hg. These are Finland, Norway, Ireland, Germany and Hungary  between 1980-1988.
+
+```{r echo = FALSE, life_round_bloodpressure_countries_greater_139}
+distinct(subset(data_eu, data_eu$Bloodpressure > 139, select = c(Country)))
+```
+
+
+### Life Expectancy vs. Income
+```{r echo = FALSE, warning = FALSE, life_Income}
+ggplot(aes(y = Life_expectancy, x = Income), data = data_eu) +
+  geom_point(alpha = 1/2, color = "blue") +
+  labs(y = "Life expectancy (Average Age)", x = "Income ($ PPP)", title = "Life expectancy vs. Income in Europe between 1980 - 2004") +
+  geom_smooth(color = "red") +
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0,82.0,0.5)) +
+  scale_x_continuous(limits= c(0, 60000), breaks = seq(0, 60000, 2500)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm"))
+```
+
+The scatterplot shows the relationship between life expectancy and income. That could be interpreted as high income prolongs life especially until the life expectancy of 76. Thereafter the life expectancy grows much slower than the increase of income.
+
+The correlation between `Life_expectancy`and `Income` is `r round(cor(data_eu$Life_expectancy, data_eu$Income),2)`, which is strong.
+
+```{r echo = FALSE, warning = FALSE, region_income_box}
+ggplot(aes(x = Region, y = Income), data = data_eu) +
+  geom_boxplot() +
+  scale_y_continuous(limits= c(0, 60000), breaks = seq(0, 60000, 5000))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Region", y = "Income ($ PPP)", title = "Boxplot Income by European Region \n between 1980-2004") 
+```
+
+The mean and median of income in each European region are shown below.
+The mean income values in Eastern, Southern, Western, and Northern Europe are:
+```{r echo = FALSE, mean_income_regions}
+mean(subset(data_eu, data_eu$Region == "Eastern Europe")$Income)
+mean(subset(data_eu, data_eu$Region == "Southern Europe")$Income)
+mean(subset(data_eu, data_eu$Region == "Western Europe")$Income)
+mean(subset(data_eu, data_eu$Region == "Northern Europe")$Income)
+```
+
+The median income values in Eastern, Southern, Western, and Northern Europe are:
+
+```{r echo = FALSE, median_income_regions}
+median(subset(data_eu, data_eu$Region == "Eastern Europe")$Income)
+median(subset(data_eu, data_eu$Region == "Southern Europe")$Income)
+median(subset(data_eu, data_eu$Region == "Western Europe")$Income)
+median(subset(data_eu, data_eu$Region == "Northern Europe")$Income)
+
+```
+
+Eastern Europe has the lowest in average and median income, followed by Southern, Western and Northern Europe. 
+
+```{r echo = FALSE, warning = FALSE, life_Income_Region}
+data_eu %>% filter(Region == "Eastern Europe") %>% group_by(Country) %>% summarize(mean_income = mean(Income), median_income = median(Income), n= n()) %>% arrange(mean_income) 
+
+data_eu %>% filter(Region == "Northern Europe") %>% group_by(Country) %>% summarize(mean_income = mean(Income), median_income = median(Income), n= n()) %>% arrange(median_income)
+```
+
+Moldova has the lowest in average and median income in Eastern Europe and Norway the highest ones.
+
+Before I investigate other features I want to look closer at the correlations between them.
+
+```{r echo = FALSE, correlation_matrix}
+cor(data_eu[, c(4, 5, 6, 7, 8, 9, 10)])
+```
+
+The correlation matrix shows the relationships between the variables in `data_eu`. Life expectancy correlates strongly with income and moderately with cholesterol, sugar and food. The relationship between life expectancy and income is the strongest among the variables. Unexpected the systolic blood pressure has almost no impact on life expectancy (correlation = 0.02). This seems really unusual. High systolic blood pressure causes serious heart diseases and strokes which leads often to death and shortens life expectancy. cholesterol correlates moderately with income and sugar, and sugar correlates moderately with income and food.
+
+
+The scatterplot matrix below shows the overview of all variables plots and the correlation between them.
+
+```{r echo=FALSE, Pairs_Panel}
+set.seed(10)
+pairs.panels(sample_n(data_eu[1:10], 1000), pch=".")
+
+```
+
+Next I will look closer at scatterplots involving life expectancy with sugar and food. Thereafter the scatterplots income with the variables cholesterol. At the end the scatterplot sugar and cholesterol.
+
+### Life expectancy vs. Sugar
+
+According to World Health Organization [the daily intake of sugar should be less than 5% of the daily food intake](http://apps.who.int/iris/bitstream/10665/149782/1/9789241549028_eng.pdf). The daily food consumption is in average 2400 calories (women: 2100 calories, men: 2700 calories). That means that the daily sugar consumption is 120 calories. Which is equivalent to `r round(120/3.87,0) ` grams per day.
+
+```{r echo = FALSE, warning = FALSE, fig.height = 12 , life_sugar}
+ggplot(aes(y = Life_expectancy, x = Sugar), data = data_eu) +
+  geom_point(alpha = 1/8, color = "blue") +
+  scale_x_continuous(limits= c(0, 170), breaks = seq(0, 170, 5)) +
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0,82.0,0.5)) +
+  geom_vline(xintercept = 31, linetype = 6, color = "green") +
+  geom_line(stat = "summary", fun.y = mean, linetype = 2, color = 'red') +
+  labs(y = "Life expectancy (Average Age)", x = "Sugar (grams per day per person)", title = "Life expectancy and Sugar Intake in Europe between 1980 - 2004") +
+  annotate("text", label = "Recommended Sugar Intake", x = 24.3, y = 67, size = 4, color = "green", angle =90) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  geom_smooth() 
+```
+
+The sugar consumption in Europe is above the recommended value. 
+It is interesting to know which countries have a healthy sugar consumption, which have minimum and which have maximum value.
+
+```{r echo = FALSE, warning = FALSE, life_sugar_healthy}
+distinct(subset(data_eu, data_eu$Sugar <= 5.48, select =c(Region, Country, Year)))
+distinct(subset(data_eu, data_eu$Sugar <= 31, select =c(Region, Country,Year)))
+distinct(subset(data_eu, data_eu$Sugar >= 167.1, select =c(Region, Country, Year)))
+```
+
+Lowest sugar intake has Armenia in 1993.
+
+Healthy sugar intake have the following countries:
+
+* Armenia has normal sugar intake between 1992-1994
+* Azerbaijan in 1993, 1994 and 2000 (https://en.wikipedia.org/wiki/Nagorno-Karabakh_War)
+* Georgia in 1993 and 1994 (http://www.britannica.com/place/Georgia-Year-In-Review-1994)
+* Bosnia Herzegovina between 1994 -1996 (which can be explained by the war in Bosnia)
+
+The highest sugar intake has Estonia between 2003-2004.
+
+All above countries are Eastern European countries.
+
+### Life expectancy vs. Food
+
+```{r echo = FALSE, warning = FALSE, life_food}
+ggplot(aes(y = Life_expectancy, x = round(data_eu$Food,0)), data = data_eu) +
+  geom_point(alpha = 1/3, color = "orange", position = "jitter") +
+  scale_y_continuous(breaks = seq(56, 82, 2)) +
+   scale_x_continuous(breaks = seq(1500,4000, 100)) +
+  labs(y = "Life expectancy (Average Age)", x = "Food Energy Intake (Calorie per Person per Day)", title = "Life expectancy and Food Energy Intake \n in Europe between 1980-2004") +
+  geom_smooth() +
+  geom_vline(xintercept = 2400, linetype = 6, color = "green") +
+  annotate("text", label = "Recommended Food Intake", x = 2300, y = 67, size = 4, color = "green", angle = 90) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) 
+```
+
+It looks like that as higher the daily food intake is as older people get. 
+
+### Life expectancy vs. Year, Region and Period
+
+```{r echo = FALSE, warning = FALSE, fig.height=12, life_Year_Region_Period}
+g_y <- ggplot(aes(x = Year, y = Life_expectancy), data = data_eu) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Year", y = "Life expectancy (year)", title = "Life Expectancy by Year, Region and Period \n in Europe between 1980-2004")
+
+g_r <- ggplot(aes(x =  Region, y = Life_expectancy), data = data_eu) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Region", y = "Life expectancy (year)")
+
+g_p <- ggplot(aes(x = Period, y = Life_expectancy), data = data_eu) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Period", y = "Life expectancy (year)")
+
+grid.arrange( g_y, g_r, g_p, ncol = 1)
+```
+
+The median life expectancy increases until 1991. Then it decreases and after 1992 increases again. 
+
+Below are the media value of life expectancy in Eastern, Southern, Western and Northern Europe,
+
+```{r echo = FALSE}
+median(subset(data_eu, data_eu$Region == "Eastern Europe")$Life_expectancy)
+median(subset(data_eu, data_eu$Region == "Southern Europe")$Life_expectancy)
+median(subset(data_eu, data_eu$Region == "Western Europe")$Life_expectancy)
+median(subset(data_eu, data_eu$Region == "Northern Europe")$Life_expectancy)
+```
+
+and the median value of life expectancy in periods: 1980 - 1989, 1990 - 1999, 2000 - 2004.
+```{r echo = FALSE}
+median(subset(data_eu, data_eu$Period == "1980 - 1989")$Life_expectancy)
+median(subset(data_eu, data_eu$Period == "1990 - 1999")$Life_expectancy)
+median(subset(data_eu, data_eu$Period == "2000 - 2004")$Life_expectancy)
+
+```
+
+The results shows that median life expectancy by regions is lowest in Eastern Europe, followed by Western, Southern and Northern Europe. Interesting is the life expectancy in Southern Europe, which is higher than Western Europe.
+
+The median life expectancy by periods is lowest between 1980 and 1989. The median life expectancy increases by the following periods.
+
+### Cholesterol vs. Income
+
+```{r echo = FALSE, warning = FALSE, Income_Cholesterol}
+ggplot(aes(y = Cholesterol, x = Income), data = data_eu) +
+  geom_point(color = "blue") +
+  scale_x_continuous(breaks = seq(0,60000, 2000)) +
+  scale_y_continuous(breaks = seq(4.5, 6.2, 0.1)) +
+  geom_hline(yintercept = 5.2, linetype = 6, color = "green") +
+  annotate("text", label = " 5.2 Limit of Normal Cholesterol", x = 52000, y = 5.25, size = 4, color = "green") +
+  labs(y = "Cholesterol (mmol/L, Age Standardized Mean)", x = "Income ($ PPP)", title = "Cholesterol vs. Income in Europe \n between 1980-2004") +
+  geom_smooth(color ="red") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) 
+
+```
+
+The cholesterol value increases as the income increases. This is true until the income get the value of 27500 $PPP then the cholesterol decreases as income increases. A possible reason to cholesterol fall is that people with higher income take medicine to lower it or that people with higher income try to reduce cholesterol intake.
+
+### Cholesterol vs. Sugar
+
+```{r echo = FALSE, warning = FALSE, Cholesterol_Sugar}
+ggplot(aes(x = round(data_eu$Sugar,1), y = Cholesterol), data = data_eu) +
+  geom_point(alpha = 1/3, color = "dark green") +
+  scale_x_continuous(limits= c(0, 170), breaks = seq(0, 170, 5)) +
+  scale_y_continuous(limits= c(4.4, 6.3), breaks = seq(4.4, 6.3, 0.1)) +
+  geom_hline(yintercept = 5.2, linetype = 3, color = "green") +
+  geom_line(stat = "summary", fun.y = quantile, fun.args = list(probs=0.9), linetype = 6, color = "red")+
+  geom_smooth() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Sugar Consumption (daily grams per person)" , y = "Cholesterol (mmol/L, Age Standardized Mean)", title = "Sugar consumption and Cholesterol in Europe \n between 1980-2004")
+  
+```
+
+The cholesterol values increase as sugar consumption increases. The turning point is the value of 120 grams sugar. After this the cholesterol decreases as sugar consumption increases. This can be explained by medicine intake against cholesterol.
+
+```{r echo = FALSE, warning = FALSE, cholesterol_sugar_p1}
+data_eu %>% filter(Cholesterol <= 5.2 & Sugar <= 31 & Period == "1980 - 1989")
+```
+
+None Country has normal cholesterol and healthy sugar consumption between 1980-1990.
+
+```{r echo = FALSE, warning = FALSE, cholesterol_sugar_p2}
+data_eu %>% filter(Cholesterol <5.2 & Sugar < 31 & Period == "1990 - 1999")
+```
+
+Only few countries in Eastern Europe have normal cholesterol values and healthy sugar consumption between 1990-99. These are:
+
+* Female and male in Armenia between 1992-1994
+* Female and male in Azerbaijan between 1993-1994
+* Female and male Bosnia and Herzegovina between 1994-1996 and
+* Female and male Georgia in 1993 and 1994
+
+```{r echo = FALSE, cholesterol_sugar_p3}
+data_eu %>% filter(Cholesterol <5.2 & Sugar < 31 & Period == "2000 - 2004")
+```
+
+Only people in Azerbaijan in 2000 have normal cholesterol values and healthy sugar consumption.
+
+### BMI vs. Region
+
+```{r echo = FALSE, warning = FALSE, bmi_region}
+ggplot(aes(Region, BMI_Index), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean, color = "red") +
+  geom_hline(yintercept = 25, linetype = 6, color = "green") +
+   annotate("text", label = "Normal BMI", y = 24.9, x = 2.7, size = 4, color = "green") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(y = "BMI Index", x = "Region", title = "Boxplot BMI by Region in Europe between 1980-2004") 
+```
+
+During 1980-2004 all European regions have in average BMI index above the normal. Lowest have the countries in Northern Europe, followed by Western, Eastern and Southern Europe.
+
+### BMI vs. Period
+```{r echo = FALSE, warning = FALSE, bmi_period}
+ggplot(aes(Period, BMI_Index), data = data_eu) +
+  geom_boxplot() +
+  geom_point(stat = "summary", fun.y = mean, color = "red") +
+  geom_hline(yintercept = 25, linetype = 6, color = "green") +
+  annotate("text", label = "Normal BMI", y = 24.9, x = 2.7, size = 5, color = "green") +
+  theme(axis.text.x = element_text(angle = 0, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(y = "BMI Index", x = "Period", title = "Boxplot BMI by Period in Europe between 1980-2004") 
+```
+
+Since 1980 the mean and median of BMI index is increasing. Only between 1980-1989 the BMI in average normal.
+Red dot in boxplot denotes the mean value.
+
+### Food vs. Sugar
+```{r echo = FALSE, warning = FALSE, sugar_food}
+ggplot(aes(x = Sugar,  y = Food), data = data_eu) +
+  geom_point(color = "blue") +
+  scale_x_continuous(breaks = seq(0, 170, 10)) +
+  scale_y_continuous(breaks = seq(1500, 3900, 100)) +
+  geom_hline(yintercept = 2400, linetype = 6, color = "green") +
+  geom_vline(xintercept = 31, linetype = 3, color = "green") +
+  geom_smooth() +
+  labs(x = "Sugar (daily grams per person)", y = "Food (daily calorie intake per Person)", title = "Food and Sugar intake in Europe between 1980-2004")
+```
+
+It is clear to see that the food and the sugar consumption in Europe is mostly above the recommended values. 
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+`Life_expectancy` which is one of my main features correlates strongly with `Income`. The correlation between them is `r cor(data_eu$Life_expectancy, data_eu$Income)`. `Life_expectancy` correlates with `Cholesterol` moderately and has almost no relationship with `Bloodpressure`, (correlation = `r cor(data_eu$Life_expectancy,  data_eu$Bloodpressure)`). 
+`Income` correlates moderately with `Choresterol`. The correlation between them is quite high, `r cor(data_eu$Income, data_eu$Cholesterol)`. The relationship between `Choresterol` and `Sugar` is moderate.
+
+The correlation between `Life_expectancy` and `Sugar` or `Life_expectancy` with `Food` is also moderate.
+
+Looking at the correlation matrix the BMI has a very weak correlation with all features. I expected a strong relation between them, since BMI  categorize people as underweight, normal weight, overweight. That means BMI indicates in which health condition people are.
+
+The median income and cholesterol increases in all periods and is lowest in Eastern Europe, followed by Southern, Western, and Northern Europe. The median life expectancy increased in all three periods and is lowest in Eastern Europe, followed by Western, Southern and Northern Europe.
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+During 1980-2004 all regions in Europe have in average BMI above the normal. Lowest BMI the Northern Europe, followed by Western, Eastern and Southern Europe.
+Since 1980 the BMI index is increasing. Only between 1980-1989 the BMI in average is normal.
+The daily food and sugar consumption per person in Europe is over the recommended values.
+
+### What was the strongest relationship you found?
+
+The strongest relationship I found is between `Life_expectancy` and `Income`. Both are main features.
+
+# Multivariate Plots Section
+
+### Income vs. Life Expectancy
+
+```{r echo = FALSE, warning = FALSE, life_income_size_income}
+ggplot(aes(y = Life_expectancy, x = Income, size = Income), data = data_eu) +
+  geom_point(alpha = 1/3, color ="blue") +
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0,82.0,0.5)) +
+  scale_x_continuous(limits= c(0, 60000), breaks = seq(0, 60000, 2500)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(y = "Life expectancy (Average Age)", x = "Income ($ PPP)", title = "Life Expectancy vs. Income in Europe by Period", size = "Income ($ PPP)") +
+   facet_wrap(~ Period)
+```
+
+The life expectancy in Europe increased. People with high income live longer than people with low income. Small changes in low income results to big changes in life expectancy. But changes to high income do not have a high impact on live expectancy. 
+
+```{r echo = FALSE, warning = FALSE, life_income_region}
+ggplot(aes(Income, Life_expectancy), data = data_eu) +
+  geom_boxplot(aes(fill = Region)) +
+  geom_smooth(color = "red") +
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0,82.0,0.5)) +
+  scale_x_continuous(limits= c(0, 60000), breaks = seq(0, 60000, 2500)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(y = "Life expectancy (Average Age)", x = "Income ($ PPP)", title = "Life expectancy vs. Income by European Region \n between 1980 - 2004") +
+   facet_wrap(~  Period)
+```
+
+Life expectancy in Southern, Western and Northern Europe increases in different periods. Interesting is the increase of life expectancy in Southern Europe, even when the income is not as high as in Western and Northern Europe and it has many outliers. In Eastern Europe median life expectancy decreased between 1990-1999 and the difference between minimum and maximum life expectancy increased.
+
+More information about the development of income and life expectancy in Europe in different years are shown in graph below.
+
+```{r echo = FALSE, warning = FALSE, fig.align="center", life_income_year}
+#, fig.width = 15, fig.height = 15, out.width = '\\maxwidth', out.width = '\\maxheight',   dev='svg', 
+ggplot(aes(y = Life_expectancy, x = Income), data = data_eu) +
+  geom_point(aes(color = Year), size = 1) +
+  geom_line() + #linetype = 6
+  scale_y_continuous(limits=c(61,83)) +
+  scale_x_continuous(limits=c(0,60000), breaks=seq(0,60000,10000)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 2, size = 6)) +   
+  theme(axis.text.y = element_text(size = 7, hjust = 7)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  theme(title = element_text(size = 10)) +
+  labs(x = "Income ($ PPP)", y = "Life expectancy (Average Age)", title = "Life Expectancy vs.Income by European \n Country and Year between 1980-2004") +
+  facet_wrap(~ Country,scales = "free_y", labeller=label_wrap_gen(width=10), ncol = 8) +
+  theme(strip.text.x = element_text(angle = 0, size = 6)) +
+  theme(legend.margin = unit(0.2, "cm"), legend.key.size = unit(0.3, "cm"))+
+  theme(legend.text = element_text(size = 6), legend.position = "right", legend.title = element_text(size = 8))+
+  guides(col=guide_legend(ncol=1)) +
+  coord_fixed(ratio=1) +
+  theme(panel.margin.y = unit(0, "lines"), panel.margin.x = unit(0, "lines"))#+
+  #theme(plot.background=element_rect(fill="darkseagreen"))
+```
+
+Generally life expectancy in most European countries increased during the analyzed time period. In some Eastern European countries life expectancy decreased slightly. For example in Russia, even when the income increased since 1998 life expectancy decreased. 
+
+In Ukraine, Moldova, Romania, Macedonia (FYR),  the income decreased but the life expectancy stayed almost at the same levels or decreased slightly between 1980-2004. The decrease of life expectancy in Bosnia Herzegovina can be explained by the war in the begging of '90s.
+
+
+```{r echo = FALSE, warning = FALSE, fig.align="center", country_income_region}
+ggplot(aes(reorder(Country,Income, median), Income), data = data_eu) + 
+  geom_boxplot(aes(fill = Region)) +
+  geom_smooth(color = "red") +
+  #geom_point(stat = "summary", fun.y = mean, color = "yellow") +
+  scale_y_continuous(limits= c(0, 60000), breaks = seq(0, 60000, 2500)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(x = "Country", y = "Income ($ PPP)", title = "Income vs. Country \n by Region in Europe between 1980 - 2004")
+```
+
+Eastern European countries have the lowest income, followed by Southern European countries.
+
+### Life Expectancy vs. Cholesterol
+
+```{r echo = FALSE, warning = FALSE, cholesterol_life_region}
+ggplot(aes(y = Life_expectancy, x = Cholesterol), data = data_eu) +
+  geom_boxplot(aes(fill = Region)) +
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0,82.0,1)) +
+  scale_x_continuous(limits = c(4, 6.3), breaks = seq(4, 6.3, 0.1)) +
+  geom_vline(xintercept = 5.2, linetype = 6, color = "green") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  labs(y = "Life expectancy (Average Age)", x = "Cholesterol (mmol/L, Age Standardized Mean)", title = "Life expectancy vs. Cholesterol \n by Region in Europe between 1980 - 2004") +
+  facet_wrap(~ Period, scales = "free_x")
+```
+
+Median life expectancy in Western, Northern and Southern Europe increased. The range of the cholesterol values for these countries decreases. In Eastern Europe median life expectancy decreases between 1990-1999 but increased in the following years. Turkey is the country in Southern Europe with many outliers.
+
+```{r echo = FALSE, warning = FALSE, fig.align="center", cholesterol_life_year}
+ggplot(aes(y = Life_expectancy, x = Cholesterol), data = data_eu) +
+  geom_point(aes(color = Year)) +
+  geom_line() + #
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0, 82.1, 10)) +
+  scale_x_continuous(limits = c(4, 6.3), breaks = seq(4, 6.3, 1)) +
+  geom_vline(xintercept = 5.2, linetype = 6, color = "green") +
+  theme(axis.text.x = element_text(vjust = 2, size = 7)) +   
+  theme(axis.text.y = element_text(size = 7, hjust = 7)) +
+  theme(legend.key.size = unit(0.5, "cm")) +
+  theme(title = element_text(size = 10)) +
+  labs(y = "Life expectancy (Average Age)", x = "Cholesterol (mmol/L, Age Standardized Mean)", title = "Life expectancy vs. Cholesterol \n by Country and Year in Europe") +
+  facet_wrap(~ Country, scales = "free_x", labeller=label_wrap_gen(width=10), ncol = 8) +
+  theme(strip.text.x = element_text(angle = 0, size = 6)) +
+  theme(legend.margin = unit(0.2, "cm"), legend.key.size = unit(0.3, "cm"))+
+  theme(legend.text = element_text(size = 6), legend.position = "right", legend.title = element_text(size = 8))+
+  guides(col=guide_legend(ncol=1)) +
+  coord_fixed(ratio=1) +
+  theme(panel.margin.y = unit(0, "lines"), panel.margin.x = unit(0.2, "lines"))
+
+```
+
+In most European countries the life expectancy increases when cholesterol decreases. This is valid also for both genders. Only in few Eastern countries such as Belarus, Russia and Ukraine life expectancy decreases when the cholesterol decreases. 
+
+```{r echo = FALSE, warning = FALSE, cholesterol_life_year_gender}
+ggplot(aes(y = Life_expectancy, x = Cholesterol), data = subset(data_eu, data_eu$Country == "Russia")) +
+  geom_point(aes(color = Year), size = 4) +
+  geom_line(linetype = 2) +
+  labs(y = "Life expectancy (Average Age)", x = "Cholesterol (mmol/L, Age Standardized Mean)", title = "Life expectancy vs. Cholesterol \n by Year in Russia between 1980 - 2004") +
+  facet_wrap(~ Gender, ncol = 1)
+
+summary(subset(data_eu, data_eu$Country == "Russia"))
+```
+
+Until 1994 life expectancy in Russia decreased. Between 1994-1998 it increased and then it decreased again. During this period the cholesterol values were normal. It seems to me that the negative change of life expectancy has less with the cholesterol to do than with political, economical and social situation in the country during that period.  
+
+```{r echo = FALSE, warning = FALSE, cholesterol_life_cholesterol_gender}
+ggplot(aes(y = Life_expectancy, x = Cholesterol), data = data_eu) +
+  geom_point(aes(color = Gender), size = 1) +
+  geom_line(linetype = 4) + 
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0, 82.1, 10)) +
+  scale_x_continuous(limits = c(4, 6.3), breaks = seq(4, 6.3, 1)) +
+  geom_vline(xintercept = 5.2, linetype = 6, color = "green") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 2, size = 7)) +   
+  theme(axis.text.y = element_text(size = 7, hjust = 7)) +  
+  theme(legend.key.size = unit(0.5, "cm")) +
+  theme(title = element_text(size = 10)) +
+  labs(y = "Life expectancy (Average Age)", x = "Cholesterol (mmol/L, Age Standardized Mean)", title = "Cholesterol and Life expectancy in Europe between 1980 - 2004")+
+  facet_wrap(~ Country, scales = "free_x",labeller=label_wrap_gen(width=10), ncol = 8) +
+  theme(strip.text.x = element_text(angle = 0, size = 6)) +
+  theme(legend.margin = unit(0.2, "cm"), legend.key.size = unit(0.3, "cm"))+
+  theme(legend.text = element_text(size = 7), legend.position = "right", legend.title = element_text(size = 8))+
+  guides(col=guide_legend(ncol=1)) +
+  coord_fixed(ratio=1) +
+  theme(panel.margin.y = unit(0, "lines"), panel.margin.x = unit(0, "lines"))
+```
+
+Even when women have in most countries higher cholesterol values than men, they have almost the same life expectancy.
+
+### Life expectancy vs. Region
+
+```{r echo = FALSE, life_region}
+ggplot(aes(x = Region, y = Life_expectancy), data = data_eu) +
+  geom_boxplot(aes(fill = Region)) +
+  geom_point(stat = "summary", fun.y= mean, color = "red") +
+  scale_y_continuous(limits = c(62,83), breaks = seq(62, 83, 2)) +
+  labs(x = "European Country", y="Life Expectancy (year)", title = "Life Expectancy by European Region \n between 1980-2004") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  theme(legend.text = element_text(size = 7), legend.position = "right", legend.title = element_text(size = 8))
+
+summary(subset(data_eu, data_eu$Region == "Eastern Europe"))
+summary(subset(data_eu, data_eu$Region == "Southern Europe"))
+summary(subset(data_eu, data_eu$Region == "Western Europe"))
+summary(subset(data_eu, data_eu$Region == "Northern Europe"))
+
+```
+
+Life expectancy in Eastern Europe is the lowest in Europe. Followed by Southern, Western and Northern Europe. Income in Eastern Europe is in average the lowest as well the cholesterol values.
+
+In Northern and Western Europe the income is very high as well the cholesterol values. But still the people live longer.
+
+In Southern Europe the income is lower than Western and Northern Europe but median life expectancy is higher as in Western Europe. It seems that not only income has an impact on life expectancy but also the country in which people live.
+
+In the boxplot below more detailed information is given.
+
+```{r echo = FALSE}
+ggplot(aes(reorder(Country, Life_expectancy, median), Life_expectancy), data = data_eu) +
+  geom_boxplot(aes(fill = Region)) +
+  scale_y_continuous(breaks = seq(60, 80, 1)) +
+  geom_point(stat = "summary", fun.y = mean, color = "yellow", shape = 20) + 
+  geom_hline(yintercept = 74.15, linetype = 6, color = "green") +
+  annotate("text", label = "Average Life Expectancy in Europe", y = 74.6, x = 9, size = 3, color = "green") +
+  labs(x = "Country", y = "Life Expectancy (year)", title = "Life Expectancy by European Country and Region \n between 1980-2004") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +  
+  theme(legend.key.size = unit(0.5, "cm")) 
+```
+
+The plot verifies that the life expectancy in Eastern Europe is lowest in Europe. 
+
+```{r echo = FALSE, Build_Linear_Model}
+lm_fit <- lm(data_eu$Life_expectancy ~ data_eu$Income)
+summary(lm_fit)
+lm_fit <- lm(data_eu$Life_expectancy ~ data_eu$Income + data_eu$Cholesterol)
+summary(lm_fit)
+lm_fit <- lm(data_eu$Life_expectancy ~ data_eu$Income + data_eu$Cholesterol + data_eu$Country)
+summary(lm_fit)
+```
+
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+
+The relationship between life expectancy and income is strong. Having high income increases also life expectancy. But an important factor is also in which country people live. If people live in countries with sophisticated health system they live longer even when their cholesterol values are above the normal and the income is not so high. 
+
+### Were there any interesting or surprising interactions between features?
+
+Women have almost the same life expectancy as men even when they have higher cholesterol values than men.
+
+Life expectancy in Eastern European countries is lower than the other European regions. The highest life expectancy is in Northern Europe, followed by Southern Europe and Western Europe.
+
+Interesting are the results of Southern Europe. Even when people's income is lower than in Western and Northern European countries they still have a high life expectancy.
+
+Country is a variable which plays an important role in life expectancy. 
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+
+Yes, I did. I created a linear model using the variables `Life_expectancy` and `Income`. Into the linear model I added the variables  `Cholesterol` and `Country`. This model gave a very high R^2 value, equal to 0.95. 
+
+The addition of `Cholesterol` variable into the model improved the R^2 value only 0.002, (R^2 =  0.586). Adding the variable `Country` into the model the R^2 increased to 0.95. 
+
+The result above can interpreted as:
+
+* 56.4% of variation in life expectancy in Europe depends on income.
+* 56.6% of variation in life expectancy in Europe depends on income and on cholesterol value.
+* 95%  of variation in life expectancy in Europe depends on which country people live, on and their income and on their cholesterol values.
+
+# Final Plots and Summary
+
+### Plot One
+
+```{r echo=FALSE, Plot_One}
+ggplot(aes(Life_expectancy), data = data_eu) +
+  geom_histogram(bins = 19, fill = "blue", color = "green") +
+  scale_x_continuous(breaks = seq(60, 82, 1)) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1)) +   
+  theme(legend.key.size = unit(0.5, "cm")) +
+  scale_y_continuous(breaks =seq(0,200, 10)) +
+  labs(x = "Life Expectancy (Years)", y = "Count", title = "Histogram of Life Expectancy in Europe between 1980-2004")
+```
+
+### Description One
+The distribution of life expectancy in Europe between 1980-2004 is negative skewed. The mean value is `r round(mean(data_eu$Life_expectancy),2)` and median value `r round(median(data_eu$Life_expectancy), 3)`. Life expectancy of 76 years has the highest frequency.
+
+### Plot Two
+
+```{r echo = FALSE, warning = FALSE, Plot_Two}
+ggplot(aes(y = Life_expectancy, x = Income), data = data_eu) +
+  geom_point(alpha = 1/2, color = "blue") +
+  labs(y = "Life expectancy (Average Age)", x = "Income ($ PPP)", title = "Life expectancy vs. Income in Europe between 1980 - 2004") +
+  geom_smooth(color = "red") +
+  scale_y_continuous(limits = c(62,82), breaks = seq(62.0,82.0,0.5)) +
+  scale_x_continuous(limits= c(0, 60000), breaks = seq(0, 60000, 2500))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 9)) +   
+  theme(legend.key.size = unit(0.5, "cm"))
+
+```
+
+### Description Two
+
+The scatterplot shows the relationship between life expectancy and income. The smooth curve increases strongly between 10000 and 23750 $ PPP. This could be interpreted as high income prolongs life especially until a life expectancy of 76 years. Thereafter life expectancy grows much slower than the increase of income.
+
+### Plot Three
+
+```{r echo=FALSE, Plot_Three}
+ggplot(aes(reorder(Country, Life_expectancy, median), Life_expectancy), data = data_eu) +
+  geom_boxplot(aes(fill = Region)) +
+  scale_y_continuous(breaks = seq(60, 80, 1)) +
+  geom_point(stat = "summary", fun.y = mean, color = "yellow", shape = 20) + 
+  geom_hline(yintercept = 74.15, linetype = 6, color = "green") +
+  annotate("text", label = "Average Life Expectancy in Europe", y = 74.6, x = 10, size = 3, color = "green") +
+  labs(x = "Country", y = "Life Expectancy (year)", title = "Life Expectancy by European Country and Region \n between 1980-2004") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, size = 6)) +  
+  theme(legend.key.size = unit(0.5, "cm")) 
+```
+
+### Description Three
+
+The life expectancy depends not only on income as it has been shown before, but also on the country in which people are living. 
+Low income countries have lower life expectancy. The Eastern European countries and Turkey are the countries in Europe with the lowest life expectancy. Countries in Southern Europe have relatively high life expectancy compared to the income.
+
+# Reflection
+
+To examine the life expectancy in Europe I created the data set `data_eu`. Which is a collection of data sets taken from Gapminder.
+I explored the `Life_expectancy` across the main features `Cholesterol`, `Bloodpressure` and `Income`. But also across other features such as `Sugar`, `Food`, `Country`, `Region`, `Period` and `Gender`. 
+
+Using scatterplots I found interesting relations between life expectancy, income and cholesterol in different European regions.
+Median `Income` and `Cholesterol` were lowest in Eastern Europe, followed by Southern, Western and Northern Europe, which had the highest values. For median `Life_expectancy` the order is different. Eastern Europe had the lowest value, followed by Western, Southern and Northern Europe. Southern Europe has a relatively higher `Life_expectancy` than their median `Income` and `Cholesterol` values would suggest. The Mediterranean diet
+might be a reason for that.
+
+I was surprised that systolic blood pressure had no impact on life expectancy as I assumed. Perhaps medical treatment of high systolic blood pressure is a reason for that.
+
+I created a linear model based on `Income`, `Cholesterol` and `Country` which gave a very high R^2. Surprisingly the variable `Cholesterol` had a weak impact on the prediction model of only two tenth of a percent.
+
+In some cases I had to take the rounded value of `Cholesterol`,`Sugar`,`Food` and `Bloodpressure` in order to see a clear pattern.
+
+The data set contains data for forty countries from 1980 until 2004. Most Eastern European countries delivered information after 1992. It would be interesting to have newer data to see more recent developments. 
+
+I believe that life expectancy depends not only on income, cholesterol and country. Especially the feature country should be taken a closer look at. It gives a combined value for many factors. Such factors are for example mortality, environment disaster, epidemic diseases, total health spending by country and gender. These features should be taken in account for a deeper investigation. 
+
