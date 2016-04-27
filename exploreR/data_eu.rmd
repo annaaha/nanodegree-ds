@@ -1,7 +1,7 @@
 ---
 title: "data_eu dataset creation"
 author: "Anna Anesiadou-Hansen"
-date: "April 17, 2016"
+date: "April 27, 2016"
 output: html_document
 ---
 
@@ -27,7 +27,7 @@ Using different data sets from `http://www.gapminder.org/data/` I have build a d
 # You should set echo=FALSE for all code chunks in your file.
 library(dplyr)
 library(psych)
-# library(xlsx)
+library(xlsx)
 library(gridExtra)
 library(tidyr)
 library(memisc)
@@ -52,7 +52,7 @@ BMI<- gather(BMI, "Gender", "BMI_Index", 3:4)
 #Overweight: BMI is 25 to 29.9
 #Obese: BMI is 30 or more
 
-# Read Bloodpressure related .xlsx files, Reshape and Merge dataframes
+# Read Bloodpressure related .csv files, Reshape and Merge dataframes
 Bloodpressure_female = read.csv("Indicator_SBP female ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
 names(Bloodpressure_female)[1] <- "Country" # Rename the first column
 Bloodpressure_female <- gather(Bloodpressure_female, Year, female, 2:ncol(Bloodpressure_female)) # Reshape dataframe
@@ -76,7 +76,7 @@ Bloodpressure <- gather(Bloodpressure, "Gender", "Bloodpressure", 3:4)
 #Hypertensive urgency               ≥ 180                 ≥ 110
 #Isolated systolic hypertension     ≥ 160                 < 90
 
-# Read Cholesterol related .xlsx files, Reshape and Merge dataframes
+# Read Cholesterol related .csv files, Reshape and Merge dataframes
 Cholesterol_female <- read.csv("Indicator_TC female ASM.csv", header = TRUE, check.names = FALSE) # Read .csv file
 names(Cholesterol_female)[1] <- "Country" # Rename the first column
 Cholesterol_female <- gather(Cholesterol_female , Year, female, 2:ncol(Cholesterol_female)) # Reshape dataframe
