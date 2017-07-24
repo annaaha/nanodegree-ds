@@ -1,0 +1,1003 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Intro to Machine Learning Final Project</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Anna Anesiadou-Hansen" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" href="css/tufte.css" type="text/css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Intro to Machine Learning Final Project</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org662f2e9">1. Introduction</a></li>
+<li><a href="#org59c3769">2. Dataset</a></li>
+<li><a href="#orgda75f6e">3. Outliers</a></li>
+<li><a href="#org4e12391">4. Features</a></li>
+<li><a href="#org1f0365f">5. Algorithm</a></li>
+<li><a href="#org27d6b6a">6. Tuning</a></li>
+<li><a href="#org3e36771">7. Validation</a></li>
+<li><a href="#org4059a10">8. Evaluation metrics</a></li>
+<li><a href="#org9458f04">9. References</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org662f2e9" class="outline-2">
+<h2 id="org662f2e9"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Enron Corporation was an U.S. electricity, natural gas,
+communications, pulp and paper company, with almost 20.000 employees.
+At the end of 2001, the company declared bankrupty, due to accounting
+fraud known also as Enron Fraud. The goal of this project is to build
+an identifier for person of interest (POI), by using machine learning
+supervised classification algorithms. POI is defined as an individual
+who was indicted, reached a settlement or plea deal with the
+government, or testified in exchange for prosecution immunity. POIs
+are assumed to be strongly involved in Enron Fraud.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org59c3769" class="outline-2">
+<h2 id="org59c3769"><span class="section-number-2">2</span> Dataset</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+The Enron dataset is derived by combining the Enron email and
+financial data. There are 146 points (persons) in dataset. The total
+number of features of each person in dataset is 21. They are divided
+in three categories financial features<label for="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="1" class="margin-toggle"/><span class="sidenote">
+financial features: <code>salary</code>, <code>deferral_payments</code>, <code>total_payments</code>, <code>loan_advances</code>, <code>bonus</code>, <code>restricted_stock_deferred</code>, <code>deferred_income</code>, <code>total_stock_value</code>, <code>expenses</code>, <code>exercised_stock_options</code>, <code>other</code>, <code>long_term_incentive</code>, <code>restricted_stock</code>, <code>director_fees</code> (all units are in US dollars)
+</span>, email
+features<label for="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="2" class="margin-toggle"/><span class="sidenote">
+email features: <code>to_messages</code>, <code>email_address</code>, <code>from_poi_to_this_person</code>, <code>from_messages</code>, <code>from_this_person_to_poi</code>, <code>shared_receipt_with_poi</code> (units are generally number of emails messages; notable exception is ‘email_address’, which is a text string)
+</span> and POI label<label for="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="3" class="margin-toggle"/><span class="sidenote">
+POI label: <code>poi</code> (boolean)
+</span>. There are 18
+POIs and 128 non-POIs in dataset.
+</p>
+<p>
+<code>LOCKHART EUGENE E</code> has been deleted because all his features have
+ <code>NaN</code> as value. The values of <code>BELFER ROBERT</code> and <code>BHATNAGAR SANJAY</code>
+ have been corrected. After cleaning the data fifteen pre-selected
+ features have been used for the investigation. The feature
+ pre-selection criterion was that a feature should have value
+ availability greater or equal to 55%. In the table below the features
+ are presented with their amount respective their percentage of
+ missing/not missing data.
+</p>
+
+<p>
+<label for="1" class="margin-toggle">&#8853;</label><input type="checkbox" id="1" class="margin-toggle"/><span class="marginnote">Number and percentage of missing/non-missing values in features</span>
+</p>
+<table id="org597a5a2" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Features</th>
+<th scope="col" class="org-right">Number of NaN</th>
+<th scope="col" class="org-right">Percent of NaN</th>
+<th scope="col" class="org-right">Number of Available</th>
+<th scope="col" class="org-right">Percent of Available</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">salary</td>
+<td class="org-right">50</td>
+<td class="org-right">34.0</td>
+<td class="org-right">95</td>
+<td class="org-right">66.0</td>
+</tr>
+
+<tr>
+<td class="org-left">to_messages</td>
+<td class="org-right">59</td>
+<td class="org-right">41.0</td>
+<td class="org-right">86</td>
+<td class="org-right">59.0</td>
+</tr>
+
+<tr>
+<td class="org-left">deferral_payments</td>
+<td class="org-right">107</td>
+<td class="org-right">74.0</td>
+<td class="org-right">38</td>
+<td class="org-right">26.0</td>
+</tr>
+
+<tr>
+<td class="org-left">total_payments</td>
+<td class="org-right">20</td>
+<td class="org-right">14.0</td>
+<td class="org-right">125</td>
+<td class="org-right">86.0</td>
+</tr>
+
+<tr>
+<td class="org-left">exercised_stock_options</td>
+<td class="org-right">44</td>
+<td class="org-right">30.0</td>
+<td class="org-right">101</td>
+<td class="org-right">70.0</td>
+</tr>
+
+<tr>
+<td class="org-left">bonus</td>
+<td class="org-right">63</td>
+<td class="org-right">43.0</td>
+<td class="org-right">82</td>
+<td class="org-right">57.0</td>
+</tr>
+
+<tr>
+<td class="org-left">restricted_stock</td>
+<td class="org-right">34</td>
+<td class="org-right">23.0</td>
+<td class="org-right">111</td>
+<td class="org-right">77.0</td>
+</tr>
+
+<tr>
+<td class="org-left">shared_receipt_with_poi</td>
+<td class="org-right">59</td>
+<td class="org-right">41.0</td>
+<td class="org-right">86</td>
+<td class="org-right">59.0</td>
+</tr>
+
+<tr>
+<td class="org-left">restricted_stock_deferred</td>
+<td class="org-right">127</td>
+<td class="org-right">88.0</td>
+<td class="org-right">18</td>
+<td class="org-right">12.0</td>
+</tr>
+
+<tr>
+<td class="org-left">total_stock_value</td>
+<td class="org-right">19</td>
+<td class="org-right">13.0</td>
+<td class="org-right">126</td>
+<td class="org-right">87.0</td>
+</tr>
+
+<tr>
+<td class="org-left">expenses</td>
+<td class="org-right">48</td>
+<td class="org-right">33.0</td>
+<td class="org-right">97</td>
+<td class="org-right">67.0</td>
+</tr>
+
+<tr>
+<td class="org-left">loan_advances</td>
+<td class="org-right">141</td>
+<td class="org-right">97.0</td>
+<td class="org-right">4</td>
+<td class="org-right">3.0</td>
+</tr>
+
+<tr>
+<td class="org-left">from_messages</td>
+<td class="org-right">59</td>
+<td class="org-right">41.0</td>
+<td class="org-right">86</td>
+<td class="org-right">59.0</td>
+</tr>
+
+<tr>
+<td class="org-left">other</td>
+<td class="org-right">53</td>
+<td class="org-right">37.0</td>
+<td class="org-right">92</td>
+<td class="org-right">63.0</td>
+</tr>
+
+<tr>
+<td class="org-left">from_this_person_to_poi</td>
+<td class="org-right">59</td>
+<td class="org-right">41.0</td>
+<td class="org-right">86</td>
+<td class="org-right">59.0</td>
+</tr>
+
+<tr>
+<td class="org-left">poi</td>
+<td class="org-right">0</td>
+<td class="org-right">0.0</td>
+<td class="org-right">145</td>
+<td class="org-right">100.0</td>
+</tr>
+
+<tr>
+<td class="org-left">director_fees</td>
+<td class="org-right">129</td>
+<td class="org-right">89.0</td>
+<td class="org-right">16</td>
+<td class="org-right">11.0</td>
+</tr>
+
+<tr>
+<td class="org-left">deferred_income</td>
+<td class="org-right">95</td>
+<td class="org-right">66.0</td>
+<td class="org-right">50</td>
+<td class="org-right">34.0</td>
+</tr>
+
+<tr>
+<td class="org-left">long_term_incentive</td>
+<td class="org-right">79</td>
+<td class="org-right">54.0</td>
+<td class="org-right">66</td>
+<td class="org-right">46.0</td>
+</tr>
+
+<tr>
+<td class="org-left">email_address</td>
+<td class="org-right">34</td>
+<td class="org-right">23.0</td>
+<td class="org-right">111</td>
+<td class="org-right">77.0</td>
+</tr>
+
+<tr>
+<td class="org-left">from_poi_to_this_person</td>
+<td class="org-right">59</td>
+<td class="org-right">41.0</td>
+<td class="org-right">86</td>
+<td class="org-right">59.0</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+ The pre-selected features are: <code>salary</code>, <code>to_messages</code>, <code>total_payments</code>,
+<code>exercised_stock_options</code>, <code>bonus</code>, <code>restricted_stock</code>,
+<code>shared_receipt_with_poi</code>, <code>total_stock_value</code>, <code>expenses</code>,
+<code>from_messages</code>, <code>other</code>, <code>from_this_person_to_poi</code>, <code>poi</code>,
+<code>email_address</code>, <code>from_poi_to_this_person</code>. The feature
+<code>email_address</code> was later deleted from the list because it caused a problem
+when using function <code>FeatureFormat</code>.
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-orgda75f6e" class="outline-2">
+<h2 id="orgda75f6e"><span class="section-number-2">3</span> Outliers</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+To find outliers was a very interesting and educational part of the
+project. After testing  different methods for finding outliers for
+univariate, bivariate and multivariate data I decided to use the
+method for multivariate data, which is the squared Mahalanobis
+distance and \({\chi}^2\)-distribution. The outlier threshold value is
+derived from the table<label for="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="4" class="margin-toggle"/><span class="sidenote">
+<i>Social Studies 201 Text: Introductory Statistics for the Social Sciences, Appendix J: The Chi Square Distribution</i>. (2004, April 2), Retrieved July 17, 2017, from <a href="http://uregina.ca/~gingrich/appchi.pdf">http://uregina.ca/~gingrich/appchi.pdf</a>
+</span> of the \({\chi}^2\)-distribution. The degree of
+freedom is the length of <code>my_features</code> list and probability <code>p</code> equal
+or less than 0.001.
+</p>
+<p>
+Possible outliers found with squared Mahalanobis distance and
+\({\chi}^2\)-distribution are: <code>BELDEN TIMOTHY N</code>, <code>BHATNAGAR SANJAY</code>,
+<code>DELAINEY DAVID W</code>, <code>DERRICK JR. JAMES V</code>, <code>FREVERT MARK A</code>, <code>HIRKO
+JOSEPH</code>, <code>KAMINSKI WINCENTY J</code>, <code>KEAN STEVEN J</code>, <code>LAVORATO JOHN J</code>,
+<code>LAY KENNETH L</code>, <code>SHAPIRO RICHARD S</code>, <code>SKILLING JEFFREY K</code>, <code>TOTAL</code>
+and <code>WHITE JR THOMAS E</code>. The key <code>TOTAL</code> had to be removed from the
+dataset, since it is not a person but a spreadsheet
+specification. Similar the key <code>THE TRAVEL AGENCY IN THE PARK</code> had
+also to be removed as non person in the dataset. Unexpectedly Mr. Pai
+Lou L did not appear as outlier and Mr. Skilling has the lowest
+Mahalanobis distance of all outliers. In figure below you can see the
+inliers and outliers of dataset.
+</p>
+
+<p>
+<label for="2" class="margin-toggle">&#8853;</label><input type="checkbox" id="2" class="margin-toggle"/><span class="marginnote">Inliers - Possible Outliers of Enron Dataset</span>
+</p>
+
+<div id="org329feab" class="figure">
+<p><img src="./possible_outliers.png" alt="possible_outliers.png" />
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org4e12391" class="outline-2">
+<h2 id="org4e12391"><span class="section-number-2">4</span> Features</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Four features <code>salary</code>, <code>bonus</code>, <code>shared_receipt_with_poi</code>,
+<code>fraction_to_poi</code> are used to identify if a person is a POI. <label for="9" class="margin-toggle">&#8853;</label><input type="checkbox" id="9" class="margin-toggle"/><span class="marginnote">In the
+final <code>features_list</code> <code>poi</code> is added.</span> The feature list has been received by
+using a pipeline. The pipeline contained three steps, preprocessing
+scaling with <code>MinMaxScaler</code>, univariate feature selection
+<code>SelectKBest</code> and the supervised classifier decision tree. This
+pipeline was used as estimator in <code>GridSearchCV</code>. In the figures
+below you can find the graphical presentation of precision, recall,
+and f1-score values from <code>GridsearchCV</code> respectively from validation by using
+<code>my_test_classifier</code> results.
+</p>
+
+<p>
+<label for="3" class="margin-toggle">&#8853;</label><input type="checkbox" id="3" class="margin-toggle"/><span class="marginnote"><code>GridSearchCV</code> results for selected number of features with classifier decision tree</span>
+<a id="org470b4fa"></a>
+<img src="./GridSearchCV_DecisionTreeClf.png" alt="GridSearchCV_DecisionTreeClf.png" />
+</p>
+
+<p>
+<label for="10" class="margin-toggle">&#8853;</label><input type="checkbox" id="10" class="margin-toggle"/><span class="marginnote">Validation results for selected number of features with classifier decision tree</span> 
+<img src="./Validation_DecisionTreeClf.png" alt="Validation_DecisionTreeClf.png" />
+</p>
+
+
+<p>
+The selected features, their scores and their importances
+are shown in the table below. The most important features was <code>bonus</code>.
+</p>
+
+<p>
+<label for="12" class="margin-toggle">&#8853;</label><input type="checkbox" id="12" class="margin-toggle"/><span class="marginnote">Selected features, feature scores and feature importances</span>
+</p>
+<table id="orga2509b8" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Features</th>
+<th scope="col" class="org-right">SelectKBest (k=4)</th>
+<th scope="col" class="org-right">Classifier: Decision Tree</th>
+</tr>
+
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-right">Feature Score</th>
+<th scope="col" class="org-right">Feature Importance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">salary</td>
+<td class="org-right">15.85873</td>
+<td class="org-right">0.06975266</td>
+</tr>
+
+<tr>
+<td class="org-left">bonus</td>
+<td class="org-right">30.72877</td>
+<td class="org-right">0.62348582</td>
+</tr>
+
+<tr>
+<td class="org-left">shared_receipt_with_poi</td>
+<td class="org-right">10.72257</td>
+<td class="org-right">0.0</td>
+</tr>
+
+<tr>
+<td class="org-left">fraction_to_poi</td>
+<td class="org-right">15.83809</td>
+<td class="org-right">0.30676152</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+<code>fraction_to_poi</code> is one of the two own created features that has been
+added in the dataset. The second one is <code>fraction_from_poi</code>. <label for="5" class="margin-toggle">&#8853;</label><input type="checkbox" id="5" class="margin-toggle"/><span class="marginnote">Own
+created features <code>fraction_from_poi</code> and <code>fraction_to_poi</code></span>
+<code>fraction_from_poi</code> is defined as the fraction of
+<code>from_poi_to_this_person</code> and <code>to_messages</code>. <code>fraction_to_poi</code> is
+defined as the fraction of <code>from_this_person_to_poi</code> and
+<code>from_messages</code>. The reason to create these was that I assumed that as
+higher the fraction is as higher is the probability that the person
+in email exchange is a POI.
+</p>
+
+<p>
+<label for="4" class="margin-toggle">&#8853;</label><input type="checkbox" id="4" class="margin-toggle"/><span class="marginnote">Scaling</span> No scaling was required for the decision tree but I still have
+done it, because the features in the dataset have ranges which vary
+wildly. Generally scaling has no impact on the results of decision
+trees since the splitting is based on proportion of samples within the
+split ranges and not on absolute values, they are distance independent.
+</p>
+</div>
+</div>
+
+
+
+<div id="outline-container-org1f0365f" class="outline-2">
+<h2 id="org1f0365f"><span class="section-number-2">5</span> Algorithm</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+Four supervised machine learning algorithms have been investigated:
+C-Support Vector Classification (SVC), Gaussian Naive Bayes, decision
+tree, and k-nearest neighbors vote.
+</p>
+
+<p>
+A quick validation of different models has shown that two of four
+algorithms could generalize unseen data well. Using
+<code>StratifiedShuffleSplit</code> the Gaussian Naive Bayes and the decision tree
+algorithms got f1-score greater than 0.3.
+</p>
+
+<p>
+<label for="6" class="margin-toggle">&#8853;</label><input type="checkbox" id="6" class="margin-toggle"/><span class="marginnote">Quick validation of algorithms</span>
+</p>
+<table id="org8eb4cc7" border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Classifier</th>
+<th scope="col" class="org-right">Classification Report</th>
+<th scope="col" class="org-right">Cross Validation Score</th>
+<th scope="col" class="org-right">StratifiedShuffleSplit</th>
+<th scope="col" class="org-right">ShuffleSplit</th>
+<th scope="col" class="org-right">StratifiedKFold</th>
+</tr>
+
+<tr>
+<th scope="col" class="org-left">&#xa0;</th>
+<th scope="col" class="org-right">scoring f1-score</th>
+<th scope="col" class="org-right">mean value f1</th>
+<th scope="col" class="org-right">mean value f1-score</th>
+<th scope="col" class="org-right">mean value f1-score</th>
+<th scope="col" class="org-right">mean value f1-score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">C-Support Vector</td>
+<td class="org-right">0.0</td>
+<td class="org-right">0.0</td>
+<td class="org-right">0.0</td>
+<td class="org-right">0.0</td>
+<td class="org-right">0.0</td>
+</tr>
+
+<tr>
+<td class="org-left">Gaussian Naive Bayes</td>
+<td class="org-right">0.55</td>
+<td class="org-right">0.26667</td>
+<td class="org-right">0.33056</td>
+<td class="org-right">0.14730</td>
+<td class="org-right">0.26667</td>
+</tr>
+
+<tr>
+<td class="org-left">Decision tree</td>
+<td class="org-right">0.20</td>
+<td class="org-right">0.24</td>
+<td class="org-right">0.30429</td>
+<td class="org-right">0.30049</td>
+<td class="org-right">0.24</td>
+</tr>
+
+<tr>
+<td class="org-left">k-nearest neighbors vote</td>
+<td class="org-right">0.0</td>
+<td class="org-right">0.0</td>
+<td class="org-right">0.09048</td>
+<td class="org-right">0.075</td>
+<td class="org-right">0.0</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+I decided to look closer at those two classifiers and improve the
+model's generalization performance by tuning their parameters. Running
+the <code>my_test_classifier.py</code> I end up with the decision tree
+algorithm. The Gaussian Naive Bayes failed to fulfill the condition
+of 0.3 for precision and recall.
+</p>
+
+
+<p>
+<label for="7" class="margin-toggle">&#8853;</label><input type="checkbox" id="7" class="margin-toggle"/><span class="marginnote"><code>GridSearchCV</code> results of pipeline with Gaussian Naive Bayes classifier</span>
+<img src="./GridSearchCV_GaussianNB.png" alt="GridSearchCV_GaussianNB.png" />
+</p>
+
+<p>
+<label for="11" class="margin-toggle">&#8853;</label><input type="checkbox" id="11" class="margin-toggle"/><span class="marginnote">Validation results of pipeline with Gaussian Naive Bayes classifier</span>
+ <img src="./Validation_Results_GaussianNB.png" alt="Validation_Results_GaussianNB.png" />
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-org27d6b6a" class="outline-2">
+<h2 id="org27d6b6a"><span class="section-number-2">6</span> Tuning</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+After finding a model that had generalized well unseen data, the next
+step was to optimize the values of its parameters in order to
+achieve better model/algorithm performance. This is known as tuning of
+parameters. The optimization is done by testing various parameters
+values. For a successful testing it is important to
+identify the parameters which have a strong impact on model/algorithm
+performance and their values to evaluate. Otherwise the parameter
+tuning could lead to suboptimal model performance.
+</p>
+
+<p>
+I tuned a pipeline with steps preprocessing <code>MinMaxScale</code>, feature
+selection <code>SelectKBest</code> and classifier decision tree with
+<code>GridSearchCV</code>. <code>GridSearchCV</code> optimizes the estimator's
+parameters, in this case the parameters of a pipeline. It
+computes all combinations of parameters values and returns the
+best model performance. In this investigation I used for tuning a
+for-loop iterating over <code>k</code>, where <code>k</code> is the number of features
+selected by <code>SelectKBest</code>. Inside the for-loop I used <code>GridSearchCV</code>. I
+wanted to see for each iteration the chosen feature set and the model
+performance by <code>GridSearchCV</code> and by validation function
+<code>my_test_classifier</code>. This allowed me to manually choose the model
+with minimum number of features and the best performance. Table below
+shows the parameters of the model and their values that have been
+tested.
+</p>
+
+
+<p>
+<label for="13" class="margin-toggle">&#8853;</label><input type="checkbox" id="13" class="margin-toggle"/><span class="marginnote">Parameters and tested values</span>
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Parameter</th>
+<th scope="col" class="org-left">Test Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">feature_selection__k</td>
+<td class="org-left">[k from for-loop]</td>
+</tr>
+
+<tr>
+<td class="org-left">classifier__criterion</td>
+<td class="org-left">['gini', 'entropy']</td>
+</tr>
+
+<tr>
+<td class="org-left">classifier__splitter</td>
+<td class="org-left">['best', 'random']</td>
+</tr>
+
+<tr>
+<td class="org-left">classifier__max_depth</td>
+<td class="org-left">[2]</td>
+</tr>
+
+<tr>
+<td class="org-left">classifier__random_state</td>
+<td class="org-left">[42]</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+The model that I have chosen consists of four features, the decision
+tree classifier had <code>classifier__criterion</code> entropy,
+<code>classifier__splitter</code> best and the model performance f1 was equal to
+0.496. This value was the max value among all f1-scores received from
+validation, see figure <a href="#org470b4fa">Validation results for selected number of
+features with classifier decision tree</a>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3e36771" class="outline-2">
+<h2 id="org3e36771"><span class="section-number-2">7</span> Validation</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+An important part of machine learning is the validation of the
+model. It is a method to evaluate how well the trained model performs
+on unseen data.
+</p>
+
+<p>
+One classic mistake is to use the same data for training and testing
+to validate a model. By separating the data into train and test set
+the risk for overfitting can be reduced substantially. Using
+cross-validation the data is split into training, validation and
+testing set, which further reduces the risk for overfitting.
+</p>
+
+<p>
+I used <code>my_test_classifier</code> which is a modification of
+<code>test_classifier</code> from <code>tester.py</code> to validate the
+model. <code>my_test_classifier</code> uses cross-validation,
+<code>StratifiedShuffleSplit</code>. Running the validation function I received
+the following metrics: accuracy, precision, recall, f1-score, f2-score,
+total number of predictions, number of true positives, number of false
+positives, number of false negatives and number of true negatives.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4059a10" class="outline-2">
+<h2 id="org4059a10"><span class="section-number-2">8</span> Evaluation metrics</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+The evaluation metrics of the model using <code>my_test_classifier</code> were
+precision with average performance of 0.495, recall with average
+performance of 0.497, and f1-score with average performance of
+0.496.
+</p>
+
+<p>
+Precision is the number of correctly predicted POIs among the total
+number of predicted POIs. Recall is number of correctly predicted POIs
+among all actual POIs. F1-score is defined as the harmonic mean of the
+precision and recall.
+<label for="8" class="margin-toggle">&#8853;</label><input type="checkbox" id="8" class="margin-toggle"/><span class="marginnote">\(f_1 = 2\cdot\frac{precision \cdot recall}{precision + recall}\) </span>
+</p>
+
+<p>
+The precision, recall and f1-score have almost the same value,
+approximately 0.50. According to recall value, almost the half of POIs
+are detected correctly among the total number of actual POIs. This is
+not a good result but still much better than 0.3 which was the
+required condition. I think the small size of dataset and the low
+number of POIs in it, are the reason for the moderate prediction
+scores.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9458f04" class="outline-2">
+<h2 id="org9458f04"><span class="section-number-2">9</span> References</h2>
+<div class="outline-text-2" id="text-9">
+<p>
+<i>A Multivariate Outlier Detection Method</i>. Retrieved July 17, 2017, from <a href="http://www.statistik.tuwien.ac.at/public/filz/papers/minsk04.pdf">http://www.statistik.tuwien.ac.at/public/filz/papers/minsk04.pdf</a>
+</p>
+
+<p>
+<i>Enron</i>. Retrieved July 17, 2017, from <a href="https://en.wikipedia.org/wiki/Enron">https://en.wikipedia.org/wiki/Enron</a>
+</p>
+
+<p>
+Garreta, R., &amp; Moncecchi, G. (2013). <i>Learning scikit-learn: Machine Learning in Python</i>. Birmingham: Packt Publishing.
+</p>
+
+<p>
+Massaron, A. B. (2016). <i>Python Data Science Essentials - Second
+  Edition</i>. Birmingham: Packt Publishing.
+</p>
+
+<p>
+Müller, A. C., &amp; Guido, S. (2016). <i>Introduction to machine learning
+  with Python a guide for data scientists</i>. Sebastopol: O'Reilly Media, Inc.
+</p>
+
+<p>
+<i>Sensitivity and specificity</i>. (2017, July 11). Retrieved July 17, 2017, from <a href="https://en.wikipedia.org/wiki/Sensitivity_and_specificity">https://en.wikipedia.org/wiki/Sensitivity_and_specificity</a> 
+</p>
+
+<p>
+<i>Scikit-learn</i>. Retrieved July 17, 2017, from <a href="http://scikit-learn.org/stable/index.html">http://scikit-learn.org/stable/index.html</a> 
+</p>
+
+<p>
+<i>Social Studies 201 Text: Introductory Statistics for the Social
+  Sciences, Appendix J: The Chi Square Distribution</i>. (2004, April 2),
+  Retrieved July 17, 2017, from <a href="http://uregina.ca/~gingrich/appchi.pdf">http://uregina.ca/~gingrich/appchi.pdf</a>
+</p>
+</div>
+</div>
+<!-- Footnotes --><!-- 
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1">1</a></sup> <div class="footpara"><p class="footpara">
+financial features: <code>salary</code>, <code>deferral_payments</code>, <code>total_payments</code>, <code>loan_advances</code>, <code>bonus</code>, <code>restricted_stock_deferred</code>, <code>deferred_income</code>, <code>total_stock_value</code>, <code>expenses</code>, <code>exercised_stock_options</code>, <code>other</code>, <code>long_term_incentive</code>, <code>restricted_stock</code>, <code>director_fees</code> (all units are in US dollars)
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2">2</a></sup> <div class="footpara"><p class="footpara">
+email features: <code>to_messages</code>, <code>email_address</code>, <code>from_poi_to_this_person</code>, <code>from_messages</code>, <code>from_this_person_to_poi</code>, <code>shared_receipt_with_poi</code> (units are generally number of emails messages; notable exception is ‘email_address’, which is a text string)
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3">3</a></sup> <div class="footpara"><p class="footpara">
+POI label: <code>poi</code> (boolean)
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.4" class="footnum" href="#fnr.4">4</a></sup> <div class="footpara"><p class="footpara">
+<i>Social Studies 201 Text: Introductory Statistics for the Social Sciences, Appendix J: The Chi Square Distribution</i>. (2004, April 2), Retrieved July 17, 2017, from <a href="http://uregina.ca/~gingrich/appchi.pdf">http://uregina.ca/~gingrich/appchi.pdf</a>
+</p></div></div>
+
+ --></div>
+<div id="postamble" class="status">
+<p class="date">Date: 2017-07-24</p>
+<p class="author">Author: Anna Anesiadou-Hansen</p>
+</div>
+</body>
+</html>
